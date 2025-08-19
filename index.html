@@ -6,48 +6,36 @@
     <title>Hệ thống dự báo chất lượng không khí và thời tiết Việt Nam</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/geotiff/dist/geotiff.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/geotiff"></script>
 </head>
 <body>
-    <!-- Navbar -->
-    <div id="navbar" class="navbar">
-        <nav>
-            <ul class="nav-list">
-                <li><button class="nav-btn" data-action="home">Trang chủ</button></li>
-                <li class="dropdown">
-                    <button class="nav-btn">Biểu đồ</button>
-                    <ul class="dropdown-menu">
-                        <li><button class="dropdown-item" data-action="aqi">AQI</button></li>
-                        <li><button class="dropdown-item" data-action="pm25">PM2.5</button></li>
-                    </ul>
-                </li>
-                <li><button class="nav-btn" data-action="compare">So sánh</button></li>
-                <li><button class="nav-btn" data-action="other">Khác</button></li>
-            </ul>
-        </nav>
-    </div> 
-
     <!-- Bản đồ -->
     <div id="map"></div>
 
     <!-- Logo và thanh điều khiển -->
     <div id="controls" class="controls">
-        <img src="https://via.placeholder.com/100x50?text=Logo" alt="Logo" class="logo">
         <div class="zoom-controls">
-            <button id="zoomIn" class="icon">+</button>
-            <button id="zoomOut" class="icon">-</button>
-            <button id="resetZoom" class="icon">[]</button>
+            <button id="resetZoom" class="icon"><span class="material-icons">fullscreen</span></button>
+            <button id="zoomIn" class="icon"><span class="material-icons">add</span></button>
+            <button id="zoomOut" class="icon"><span class="material-icons">remove</span></button>
+        </div>
+        <span class="filler"></span>
+        <button id="mapInfo" class="icon"><span class="material-icons">info</span></button>
+        <div id="mapInfo-popup" class="popup">
+            <p>Bản đồ thể hiện thông tin về nồng độ bụi PM25 trên toàn bộ các khu vực Việt Nam</p>
         </div>
     </div>
 
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <p class="sidebar-title">Thông tin</p>
-            <button id="toggleSidebar" class="togge-sidebar-btn">=</button>
+            <h1 class="sidebar-title">Thông tin</h1>
         </div>
         <div id="sidebar-content">
-            <h2>Thông tin</h2>
+            <p>Nhấp vào bản đồ để hiển thị thông tin</p>
         </div>
     </div>
 
@@ -55,7 +43,7 @@
         <div class="trigger"></div>
         <div class="footer-content">
             <label for="datePicker">Chọn ngày: </label>
-            <input type="date" id="datePicker" min="2021-01-01" max="2021-12-31" value="2021-01-01">
+            <input type="date" id="datePicker" min="2021-01-01" max="2021-12-31" value="2021-12-31">
         </div>
     </div>
 

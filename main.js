@@ -1,41 +1,34 @@
-//  
-// LIÊN QUAN ĐẾN MAP
-//
+// helper functions
+async function getPM25(lat, lon, date) {
+    // load GeoTIFF
+    var filePath = "data/PM25_" + date + "_3km.tif"
+    const tiff = await GeoTIFF.fromUrl(filePath)
+    const image = await tiff.getImage();
 
-// Load map bằng Leaflet
+    const [minX, minY, maxX, maxY] = image.getBoundingBox();
+    const width = image.getWidth();
+    const height = image.getHeight();
+
+    const xRes = (maxX - minX) / width;
+    const yRes = (maxY - minY) / height;
+
+    const col = Math.floor((lon - minX) / xRes);
+    const row = Math.floor((maxY - lat) / yRes);
+
+    const raster = await image.readRasters({ window: [col, row, col + 1, row + 1] });
+    const pm25Value = raster[0][0];
+
+    return pm25Value !== undefined ? pm25Value : null;
+}
+
+var date = '20211231';
+
+let popup = L.popup();
+
 var map = L.map('map', {
     center: [16.0, 108.0],
     zoom: 6,
     zoomControl: false
-});
-
-let popup = L.popup();
-
-map.on('click', async function(e) {
-    var lat = e.latlng.lat.toFixed(5);
-    var lon = e.latlng.lng.toFixed(5);
-    var token = 'b212b2c6afbe5ea831c814b5524f980d0f003758'; 
-    var url = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${token}`;
-
-    document.getElementById('sidebar-content').innerHTML = `Lat: ${lat}, Lon: ${lon}`;
-
-
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(data); // Đây là JSON trả về từ API
-
-        popup
-            .setLatLng(e.latlng)
-            .setContent(`
-                ${data.data.city.name}<br>
-                ${data.data.time.s}</br>
-                AQI: ${data.data.aqi || 'Không có dữ liệu'}    
-                `)
-            .openOn(map);
-    } catch (err) {
-        console.error('Lỗi fetch AQICN:', err);
-    }
 });
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -43,7 +36,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 var terracottaUrl = 'http://localhost:5000/singleband/{date}/{z}/{x}/{y}.png?colormap=pubu&stretch_range=[0,50.8]';
-var pm25Layer = L.tileLayer(terracottaUrl.replace('{date}', '20210101')).addTo(map);
+var pm25Layer = L.tileLayer(terracottaUrl.replace('{date}', date)).addTo(map);
 
 var geojsonFeature = null;
 
@@ -52,7 +45,6 @@ function loadGeoJSON(filePath) {
         .then(response => response.json())
         .then(data => {
             geojsonFeature = data;
-            console.log('GeoJSON data loaded:');
             
             // Di chuyển 2 dòng này vào đây
             var geojsonLayer = L.geoJSON().addTo(map);
@@ -63,9 +55,15 @@ function loadGeoJSON(filePath) {
 
 loadGeoJSON('data2/VNnew34.json');
 
-// var AQI_URL = 'https://tiles.aqicn.org/tiles/usepa-pm25/{z}/{x}/{y}.png?token=b212b2c6afbe5ea831c814b5524f980d0f003758';
-// var AQI_ATTR = 'Air Quality Tiles &copy; <a href="https://aqicn.org">aqicn.org</a>';
-// var aqiLayer = L.tileLayer(AQI_URL, {attribution: AQI_ATTR}).addTo(map);
+map.on('click', async function(e) {
+    var lat = e.latlng.lat.toFixed(5);
+    var lon = e.latlng.lng.toFixed(5);
+    var pm25Value = await getPM25(lat, lon, date);
+
+    document.getElementById('sidebar-content').innerHTML = `
+        Lat: ${lat}, Lon: ${lon}
+        <br>PM2.5: ${pm25Value !== null ? pm25Value.toFixed(2) + ' µg/m³' : 'Không có dữ liệu'}`;
+});
 
 // Điều khiển phóng to/thu nhỏ/cố định
 document.getElementById('zoomIn').addEventListener('click', function() {
@@ -78,21 +76,16 @@ document.getElementById('resetZoom').addEventListener('click', function() {
     map.setView([16.0, 108.0], 6);
 });
 
-// Toggle sidebar
-document.getElementById('toggleSidebar').addEventListener('click', function() {
-    var sidebar = document.getElementById('sidebar');
-    var btn = document.getElementById('toggleSidebar');
-    if (sidebar.classList.toggle('collapsed')) {
-        btn.textContent = '(i)';
-    } else {
-        btn.textContent = 'Thông tin';
-    }
+// Hiển thị thông tin bản đồ
+document.getElementById('mapInfo').addEventListener('click', function() {
+    document.getElementById('mapInfo-popup').classList.toggle('show');
 });
 
 // Xử lý chọn ngày
 document.getElementById('datePicker').addEventListener('change', function() {
     var selectedDate = this.value.replace(/-/g, ''); // Chuyển yyyy-mm-dd thành yyyymmdd
     var newUrl = terracottaUrl.replace('{date}', selectedDate);
+    date = selectedDate; // Cập nhật biến date
     pm25Layer.setUrl(newUrl);
     map.invalidateSize(); // Cập nhật lại bản đồ
 });
