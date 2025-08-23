@@ -46,8 +46,17 @@ function loadGeoJSON(filePath) {
         .then(data => {
             geojsonFeature = data;
             
-            // Di chuyển 2 dòng này vào đây
-            var geojsonLayer = L.geoJSON().addTo(map);
+            // var geojsonLayer = L.geoJSON().addTo(map);
+            var geojsonLayer = L.geoJSON(geojsonFeature, {
+                style: function (feature) {
+                    return {
+                        color: "#333333",      // màu viền polygon
+                        weight: 1,             // độ dày viền (càng nhỏ càng mảnh)
+                        fillColor: "#4a90e2",  // màu nền bên trong polygon
+                        fillOpacity: 0.5       // độ trong suốt của fill
+                    };
+                }
+            }).addTo(map);
             geojsonLayer.addData(geojsonFeature);
         })
         .catch(error => console.error('Lỗi:', error));
@@ -61,7 +70,8 @@ map.on('click', async function(e) {
     var pm25Value = await getPM25(lat, lon, date);
 
     document.getElementById('sidebar-content').innerHTML = `
-        Lat: ${lat}, Lon: ${lon}
+        Date: ${date    }
+        <br>Lat: ${lat}, Lon: ${lon}
         <br>PM2.5: ${pm25Value !== null ? pm25Value.toFixed(2) + ' µg/m³' : 'Không có dữ liệu'}`;
 });
 
@@ -116,10 +126,13 @@ document.querySelector('.popup').addEventListener('click', function(e) {
 });
 
 // Xử lý chọn ngày
-document.getElementById('datePicker').addEventListener('change', function() {
-    var selectedDate = this.value.replace(/-/g, ''); // Chuyển yyyy-mm-dd thành yyyymmdd
-    var newUrl = terracottaUrl.replace('{date}', selectedDate);
-    date = selectedDate; // Cập nhật biến date
+window.addEventListener('updateMapWithNewDate', (e) => {
+    var newDate = e.detail;
+    console.log(newDate);
+    // var newUrl = terracottaUrl.replace('{date}', selectedDate);
+    var newUrl = terracottaUrl.replace('{date}', newDate);
+    // date = selectedDate; // Cập nhật biến date
+    date = newDate; // Cập nhật biến date
     pm25Layer.setUrl(newUrl);
     map.invalidateSize(); // Cập nhật lại bản đồ
 });

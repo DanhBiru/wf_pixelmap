@@ -1,17 +1,20 @@
+window.onload = function() {
+    const slider = document.getElementById("timeSlider");
+    slider.value = 14; // về node thứ 4 mặc định
+};
+
+// Tạo dữ liệu ngày
 const dates = [];
-const startDate = new Date('2025-08-06');
+var startDate = new Date('2021-09-20');
 
 for (let i = 0; i < 22; i++) {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + i);
     dates.push({
-        short: String(date.getDate()).padStart(2, '0') + '-' + 
-                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                date.getFullYear(),
         display: String(date.getDate()).padStart(2, '0') + '-' + 
                 String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                 date.getFullYear(),
-        isToday: date.toDateString() === new Date('2025-08-20').toDateString()
+        isToday: date.toDateString() === new Date('2025-10-3').toDateString()
     });
 }
 
@@ -24,7 +27,7 @@ const dateLabels = document.getElementById('dateLabels');
 
 let isPlaying = false;
 let playInterval;
-let currentIndex = 14; // Bắt đầu từ 20/8/2025
+let currentIndex = 14; 
 
 // Tạo labels cho các ngày
 function createDateLabels() {
@@ -46,10 +49,18 @@ function createDateLabels() {
     });
 }
 
+// Xử lý chuỗi
+function formatDate(input) {
+    // Đổi format từ dd-mm-yyyy thành yyyymmdd
+    const [day, month, year] = input.split("-");
+    const output = `${year}${month}${day}`;
+
+    return output
+}
+
 // Cập nhật thời gian hiện tại
 function updateCurrentTime() {
     const selectedDate = dates[currentIndex];
-    currentTime.textContent = `23:00:00 ${selectedDate.display}`;
     
     // Cập nhật progress bar
     const progress = (currentIndex / (dates.length - 1)) * 100;
@@ -57,6 +68,11 @@ function updateCurrentTime() {
     
     // Cập nhật active label
     createDateLabels();
+
+    // Cập nhật date và update map ở main.js
+    const formatted_newdate = formatDate(selectedDate['display']);
+    window.dispatchEvent(new CustomEvent("updateMapWithNewDate", {detail: formatted_newdate}));
+    // console.log(formatDate(selectedDate['display']))
 }
 
 // Play/Pause functionality

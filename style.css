@@ -353,9 +353,11 @@ body {
 
 /* slider */
 .timeline-control {
-    background: var(--white-30);
-    backdrop-filter: blur(10px);
+    z-index: 3;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
     border-radius: 12px;
+    margin: var(--margin-K);
     padding: 20px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     width: 90%;
@@ -363,8 +365,8 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
-    z-index: 2;
-    margin: var(--margin-K);
+    display: flex;
+    gap: 20px;
 }
 
 .timeline-header {
@@ -395,6 +397,7 @@ body {
 }
 
 .current-time {
+    display: none;
     font-size: 16px;
     font-weight: 600;
     color: #333;
@@ -406,7 +409,6 @@ body {
 /* Custom Range Slider */
 .timeline-slider {
     position: relative;
-    display: flex;
     width: 100%;
     margin: 20px 0;
 }
@@ -506,13 +508,6 @@ body {
     .current-time {
         font-size: 14px;
     }
-}
-
-.demo-info {
-    text-align: center;
-    color: #666;
-    margin-top: 20px;
-    font-size: 14px;
 }
 
 
