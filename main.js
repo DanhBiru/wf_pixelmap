@@ -28,14 +28,21 @@ let popup = L.popup();
 var map = L.map('map', {
     center: [16.0, 108.0],
     zoom: 6,
-    zoomControl: false
+    zoomControl: false,
+    minZoom: 6,   // zoom nhỏ nhất
+    maxZoom: 12,  // zoom lớn nhất
+    maxBounds: [
+        [8.18, 102.14],   // góc tây nam VN (gần Cà Mau)
+        [23.39, 109.46]   // góc đông bắc VN (gần Hà Giang)
+    ],
+    maxBoundsViscosity: 1.0 // 1.0 = không cho kéo ra ngoài luôn, 0.0 = cho kéo tự do
 });
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-var terracottaUrl = 'http://localhost:5000/singleband/{date}/{z}/{x}/{y}.png?colormap=pubu&stretch_range=[0,50.8]';
+var terracottaUrl = 'http://localhost:5000/singleband/20210101/{z}/{x}/{y}.png?colormap=tab20c&stretch_range=[0,300]';
 var pm25Layer = L.tileLayer(terracottaUrl.replace('{date}', date)).addTo(map);
 
 var geojsonFeature = null;
@@ -45,23 +52,55 @@ function loadGeoJSON(filePath) {
         .then(response => response.json())
         .then(data => {
             geojsonFeature = data;
-            
-            // var geojsonLayer = L.geoJSON().addTo(map);
-            var geojsonLayer = L.geoJSON(geojsonFeature, {
-                style: function (feature) {
-                    return {
-                        color: "#333333",      // màu viền polygon
-                        weight: 1,             // độ dày viền (càng nhỏ càng mảnh)
-                        fillColor: "#4a90e2",  // màu nền bên trong polygon
-                        fillOpacity: 0.5       // độ trong suốt của fill
-                    };
+
+            function style(feature) {
+                return {
+                    color: "#333333",      
+                    weight: 0.5,           
+                    fillColor: "#4a90e2",  
+                    fillOpacity: 0       
+                };
+            }
+
+            function highlightFeature(e) {
+                var layer = e.target;
+                layer.setStyle({
+                    weight: 2,             
+                    color: "#003e71ff",     
+                    fillColor: "#4a90e2",  
+                    fillOpacity: 0.2
+                });
+                layer.bringToFront();
+            }
+
+            function resetHighlight(e) {
+                geojsonLayer.resetStyle(e.target);
+            }
+
+            function onEachFeature(feature, layer) {
+                layer.on({
+                    mouseover: highlightFeature,
+                    mouseout: resetHighlight
+                });
+
+                if (feature.properties && feature.properties.NAME_1) {
+                    layer.bindTooltip(feature.properties.NAME_1, {
+                        permanent: true,   
+                        direction: "center",
+                        className: "province-label" 
+                    }).openTooltip();
                 }
+            }
+
+            var geojsonLayer = L.geoJSON(geojsonFeature, {
+                style: style,
+                onEachFeature: onEachFeature
             }).addTo(map);
-            geojsonLayer.addData(geojsonFeature);
         })
         .catch(error => console.error('Lỗi:', error));
 }
 
+// split
 loadGeoJSON('data2/VNnew34.json');
 
 map.on('click', async function(e) {

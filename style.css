@@ -354,26 +354,23 @@ body {
 /* slider */
 .timeline-control {
     z-index: 3;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(8px);
-    border-radius: 12px;
-    margin: var(--margin-K);
+    border-radius: 5px;
+    margin-right: var(--margin-K);
     padding: 20px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    height: 40px;
     width: 90%;
-    max-width: 800px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
+    max-width: 1360px;
     display: flex;
-    gap: 20px;
+    gap: 10px;
 }
 
 .timeline-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
 }
 
 .play-btn {
@@ -410,12 +407,12 @@ body {
 .timeline-slider {
     position: relative;
     width: 100%;
-    margin: 20px 0;
+    margin: 15px 0px;
 }
 
 .slider-track {
     width: 100%;
-    height: 6px;
+    height: 5px;
     background: linear-gradient(to right, #e3f2fd, #2196f3);
     border-radius: 3px;
     position: relative;
@@ -433,7 +430,6 @@ body {
 }
 
 .slider-input::-webkit-slider-thumb {
-    -webkit-appearance: none;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -450,14 +446,13 @@ body {
 }
 
 .slider-input::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: #2196f3;
-    border: 3px solid white;
+    border: 2px solid white;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     cursor: pointer;
-    border: none;
 }
 
 /* Date Labels */
@@ -465,11 +460,10 @@ body {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
-    padding: 0 10px;
 }
 
 .date-label {
-    font-size: 11px;
+    font-size: 13px;
     color: #666;
     text-align: center;
     flex: 1;
@@ -510,75 +504,69 @@ body {
     }
 }
 
+/* note */
+.color-scale-container {
+    z-index: 3;
+    height: 120px;
+    background-color: rgba(255,255,255,0.5);
+    padding: var(--padding-F);
+    border-radius: var(--border-radius-E);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+}
+
+.color-bar {
+    margin-right: 8px;
+    width: 5px;
+    height: 120px;
+    border-radius: var(--border-radius-G);
+    position: relative;
+    background: linear-gradient(to top, 
+        #7E0023 0% 10%,  /* xanh lá */
+        #8F3F97 18% 28%,  /* vàng */
+        #FF0000 36% 46%,  /* cam */
+        #FF7E00 54% 64%,  /* đỏ */
+        #FFFF00 72% 82%,  /* tím */
+        #00E400 90% 100%  /* nâu đỏ */
+    );
+}
+
+.scale-labels {
+    display: flex;
+    flex-direction: column;
+    height: 120px;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 10px;
+    font-weight: 500;
+    color: #0E182D;
+    opacity: 0.6;
+}
 
 /* footer */
 .footer {
+    padding: var(--margin-K);
     position: absolute;
+    flex-direction: row-reverse;
+    display: flex;
+    align-items: flex-end;
     bottom: 0;
-    left: 50%;
-    transform: translate(-50%, 80%);
-    display: inline-block;
-
-    width: auto;
-    height: auto;
-
-    border-radius: 10px 10px 0 0;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 10px;
-    z-index: 1;
-    text-align: center;
+    right: 0;
+    width: 100vw;
 }
 
-.footer:hover {
-    transform: translate(-50%, 5%);
-}
-
-.footer-content {
-    margin-top: 10px;
-}
-
-.footer-content label {
-    margin-right: 10px;
-}
-
-.footer-content input {
-    padding: 5px;
-    font-size: 14px;
-}
-
-.overlay {
-    position: fixed;
-    top: 60px;
-    right: 10px;
-    width: 300px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    z-index: 1000;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.aqi-info h2, .aqi-info h3, .aqi-info h4 {
-    margin: 10px 0;
-}
-
-.aqi-info p {
-    margin: 5px 0;
-}
-
-.aqi-info table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.aqi-info th, .aqi-info td {
-    border: 1px solid #ccc;
-    padding: 5px;
-    text-align: left;
-}
-
-.aqi-info th {
-    background: #f0f0f0;
+/* text on leaflet map */ 
+.leaflet-tooltip.province-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    text-shadow: 
+        -1px -1px 0 white,
+        1px -1px 0 white,
+        -1px  1px 0 white,
+        1px  1px 0 white;
 }
