@@ -9,6 +9,10 @@ async function getPM25(lat, lon, date) {
     const width = image.getWidth();
     const height = image.getHeight();
 
+    if(lon < minX || lon > maxX || lat < minY || lat > maxY) {
+        return null;
+    }
+
     const xRes = (maxX - minX) / width;
     const yRes = (maxY - minY) / height;
 
@@ -18,12 +22,10 @@ async function getPM25(lat, lon, date) {
     const raster = await image.readRasters({ window: [col, row, col + 1, row + 1] });
     const pm25Value = raster[0][0];
 
-    return pm25Value !== undefined ? pm25Value : null;
+    return pm25Value > 0 ? pm25Value : null;
 }
 
 var date = '20211231';
-
-let popup = L.popup();
 
 var map = L.map('map', {
     center: [16.0, 108.0],
@@ -32,17 +34,22 @@ var map = L.map('map', {
     minZoom: 6,   // zoom nhỏ nhất
     maxZoom: 12,  // zoom lớn nhất
     maxBounds: [
-        [8.18, 102.14],   // góc tây nam VN (gần Cà Mau)
-        [23.39, 109.46]   // góc đông bắc VN (gần Hà Giang)
+        [7.18, 101.14],   // góc tây nam VN (gần Cà Mau)
+        [24.39, 110.46]   // góc đông bắc VN (gần Hà Giang)
     ],
-    maxBoundsViscosity: 1.0 // 1.0 = không cho kéo ra ngoài luôn, 0.0 = cho kéo tự do
+    maxBoundsViscosity: 1.0 
 });
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}', {
+	attribution: '&copy; CNES, Distribution Airbus DS, © Airbus DS, © PlanetObserver (Contains Copernicus Data) | &copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	ext: 'jpg'
 }).addTo(map);
 
-var terracottaUrl = 'http://localhost:5000/singleband/20210101/{z}/{x}/{y}.png?colormap=tab20c&stretch_range=[0,300]';
+// L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+// 	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+// }).addTo(map);
+
+var terracottaUrl = 'http://localhost:5000/singleband/{date}/{z}/{x}/{y}.png?colormap=tab20c&stretch_range=[0,300]';
 var pm25Layer = L.tileLayer(terracottaUrl.replace('{date}', date)).addTo(map);
 
 var geojsonFeature = null;
@@ -83,12 +90,26 @@ function loadGeoJSON(filePath) {
                     mouseout: resetHighlight
                 });
 
+                // if (feature.properties && feature.properties.NAME_1) {
+                //     layer.bindTooltip(feature.properties.NAME_1, {
+                //         permanent: true,   
+                //         direction: "center",
+                //         className: "province-label" 
+                //     }).openTooltip();
+                // }
+
                 if (feature.properties && feature.properties.NAME_1) {
-                    layer.bindTooltip(feature.properties.NAME_1, {
-                        permanent: true,   
+                    var center = layer.getBounds().getCenter();
+
+                    var label = L.tooltip({
+                        permanent: true,
                         direction: "center",
-                        className: "province-label" 
-                    }).openTooltip();
+                        className: "province-label"
+                    })
+                    .setContent(feature.properties.NAME_1)
+                    .setLatLng(center);
+
+                    label.addTo(map);
                 }
             }
 
@@ -96,6 +117,17 @@ function loadGeoJSON(filePath) {
                 style: style,
                 onEachFeature: onEachFeature
             }).addTo(map);
+            var geojsonLayer = L.geoJSON(
+                {
+                    ...geojsonFeature,
+                    features: [geojsonFeature.features[18]]
+                },
+                {
+                    style: style,
+                    onEachFeature: onEachFeature
+                }
+            ).addTo(map);
+
         })
         .catch(error => console.error('Lỗi:', error));
 }
@@ -167,35 +199,9 @@ document.querySelector('.popup').addEventListener('click', function(e) {
 // Xử lý chọn ngày
 window.addEventListener('updateMapWithNewDate', (e) => {
     var newDate = e.detail;
-    console.log(newDate);
-    // var newUrl = terracottaUrl.replace('{date}', selectedDate);
     var newUrl = terracottaUrl.replace('{date}', newDate);
-    // date = selectedDate; // Cập nhật biến date
-    date = newDate; // Cập nhật biến date
     pm25Layer.setUrl(newUrl);
-    map.invalidateSize(); // Cập nhật lại bản đồ
-});
-
-// Xử lý click cho các nút nav
-document.querySelectorAll('.nav-btn, .dropdown-item').forEach(button => {
-    button.addEventListener('click', function() {
-        const action = this.getAttribute('data-action');
-        switch (action) {
-            case 'home':
-                console.log('Tác vụ Trang chủ được gọi');
-                break;
-            case 'aqi':
-                console.log('Tác vụ Biểu đồ AQI được gọi');
-                break;
-            case 'pm25':
-                console.log('Tác vụ Biểu đồ PM2.5 được gọi');
-                break;
-            case 'compare':
-                console.log('Tác vụ So sánh được gọi');
-                break;
-            case 'other':
-                console.log('Tác vụ Khác được gọi');
-                break;
-        }
-    });
+    map.invalidateSize(); 
+    console.log("Map updated for date: " + newDate);
+    console.log(newUrl);
 });
