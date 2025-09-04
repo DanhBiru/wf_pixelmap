@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ thống dự báo chất lượng không khí và thời tiết Việt Nam</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <!-- <script src="https://unpkg.com/geotiff/dist/geotiff.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/geotiff"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script> -->
 </head>
 <body>
     <!-- Bản đồ -->
@@ -24,7 +22,12 @@
             <button id="zoomOut" class="icon"><span class="material-icons">remove</span></button>
         </div>
         <span class="filler"></span>
-        <button id="mapInfoBtn" class="icon"><span class="material-icons">info</span></button>
+        <div class="zoom-controls" id="mapControlsContainer">
+            <button id="mapInfoBtn" class="icon"><span class="material-icons">info</span></button>
+            <!-- <button id="tileSettingBtn" class="icon"><span class="material-icons" style="font-size: 20px">layers</span></button> -->
+            <button id="tile-prev" class="icon"><span class="material-icons" style="font-size: 24px; width: 24px; height: 24px;">arrow_upward_alt</span></button>
+            <button id="tile-next" class="icon"><span class="material-icons" style="font-size: 24px; width: 24px; height: 24px;">arrow_downward_alt</span></button>
+        </div>
     </div>
 
     <div class="popup-overlay" id="popupOverlay">
@@ -68,7 +71,7 @@
         </div>
         <div id="sidebar-content">
             <p>Nhấp vào bản đồ để hiển thị thông tin</p>
-            <span  id="city-aqi-container"></span>  
+            <div id="PM25-chart"></div>
         </div>
     </div>
 
@@ -77,11 +80,11 @@
             <div class="color-bar"></div>
             <div class="scale-labels">
                 <div class="scale-label">0</div>
-                <div class="scale-label">50</div>
+                <div class="scale-label">12</div>
+                <div class="scale-label">35</div>
+                <div class="scale-label">55</div>
                 <div class="scale-label">100</div>
                 <div class="scale-label">150</div>
-                <div class="scale-label">200</div>
-                <div class="scale-label">300</div>
             </div>
         </div>
 
@@ -100,32 +103,13 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.min.js"></script>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/geotiff"></script> -->
+
     <script src="slider.js"></script>
     <script src="main.js"></script>
-
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/geotiff/dist/geotiff.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/geotiff"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-    <script  type="text/javascript"  charset="utf-8">  
-        (function  (w,  d,  t,  f)  {  
-            w[f]  =  w[f]  ||  function  (c,  k,  n)  {  
-                s  =  w[f],  k  =  s['k']  =  (s['k']  ||  (k  ?  ('&k='  +  k)  :  ''));  s['c']  =  
-                    c  =  (c  instanceof  Array)  ?  c  :  [c];  s['n']  =  n  =  n  ||  0;  L  =  d.createElement(t),  e  =  d.getElementsByTagName(t)[0];  
-                L.async  =  1;  L.src  =  '//feed.aqicn.org/feed/'  +  (c[n].city)  +  '/'  +  (c[n].lang  ||  '')  +  '/feed.v1.js?n='  +  n  +  k;  
-                e.parentNode.insertBefore(L,  e);  
-            };  
-        })(window,  document,  'script',  '_aqiFeed');    
-    </script>
-    <script type="text/javascript" charset="utf-8">
-        _aqiFeed({
-            display: `%details`,    
-            container: "city-aqi-container",
-            city: "hanoi",     
-            size: "large",
-            lang: "vn"  
-        });
-    </script> 
 </body>
 </html>

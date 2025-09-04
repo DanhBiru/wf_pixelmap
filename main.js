@@ -1,4 +1,16 @@
-// helper functions
+// ---------------------------------------- //
+// ---------- GLOBAL VARIABLES ------------ //
+// ---------------------------------------- //
+
+var date_today = '20211004';
+var date = '20211004'; //TODO: đổi tên biến này thành today
+let currentMarker = null;
+
+// ---------------------------------------- //
+// ---------- HELPER FUNCTIONS ------------ //
+// ---------------------------------------- //
+
+// get PM25 at a location with given latitude and longtitude
 async function getPM25(lat, lon, date) {
     // load GeoTIFF
     var filePath = "data/PM25_" + date + "_3km.tif"
@@ -25,33 +37,128 @@ async function getPM25(lat, lon, date) {
     return pm25Value > 0 ? pm25Value : null;
 }
 
-var date = '20211231';
+// get a string with 5 days before and after the given date in YYYYMMDD format
+function get11DaysAround(dateStr) {
+    const year = parseInt(dateStr.slice(0, 4), 10);
+    const month = parseInt(dateStr.slice(4, 6), 10) - 1; // JS month = 0-11
+    const day = parseInt(dateStr.slice(6, 8), 10);
 
+    const baseDate = new Date(year, month, day);
+    const rawDates = [];
+    const formattedDates = [];
+
+    for (let i = -4; i <= 4; i++) {
+        const d = new Date(baseDate);
+        d.setDate(baseDate.getDate() + i);
+
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+
+        formattedDates.push(`${dd}/${m}/${y}`)
+        rawDates.push(`${y}${m}${dd}`);
+    }
+
+    return {rawDates, formattedDates };
+}
+
+// generate tabels with given dates and PM25 indexes
+function renderPM25Table(dates, values) {
+    let html = `
+      <table border="1" cellspacing="0" cellpadding="5">
+        <tr>
+          <th>date</th>
+          <th>PM25</th>
+        </tr>
+    `;
+
+    for (let i = 0; i < dates.length; i++) {
+        html += `
+          <tr>
+            <td>${dates[i]}</td>
+            <td>${values[i]}</td>
+          </tr>
+        `;
+    }
+
+    html += `</table>`;
+    return html;
+}
+
+// ---------------------------------------- //
+// ------------ MAP AND LAYERS ------------ //
+// ---------------------------------------- //
+
+// map initialization
 var map = L.map('map', {
     center: [16.0, 108.0],
     zoom: 6,
     zoomControl: false,
-    minZoom: 6,   // zoom nhỏ nhất
-    maxZoom: 12,  // zoom lớn nhất
+    minZoom: 6,   
+    maxZoom: 12, 
     maxBounds: [
-        [7.18, 101.14],   // góc tây nam VN (gần Cà Mau)
-        [24.39, 110.46]   // góc đông bắc VN (gần Hà Giang)
+        [7.18, 101.14],   
+        [24.39, 110.46]   
     ],
     maxBoundsViscosity: 1.0 
 });
 
-L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}', {
+// base map tiles and tile control button
+var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	maxZoom: 19,
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+
+var Stadia_AlidadeSmooth = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}', {
+	minZoom: 0,
+	maxZoom: 20,
+	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	ext: 'png'
+});
+
+var Stadia_AlidadeSatellite = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}', {
+	minZoom: 0,
+	maxZoom: 20,
 	attribution: '&copy; CNES, Distribution Airbus DS, © Airbus DS, © PlanetObserver (Contains Copernicus Data) | &copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 	ext: 'jpg'
-}).addTo(map);
+});
 
-// L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-// 	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-// }).addTo(map);
+var Stadia_StamenTerrain = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.{ext}', {
+	minZoom: 0,
+	maxZoom: 18,
+	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	ext: 'png'
+});
 
-var terracottaUrl = 'http://localhost:5000/singleband/{date}/{z}/{x}/{y}.png?colormap=tab20c&stretch_range=[0,300]';
-var pm25Layer = L.tileLayer(terracottaUrl.replace('{date}', date)).addTo(map);
+const baseMaps = [
+   OpenStreetMap_Mapnik,
+   Stadia_AlidadeSatellite,
+   Stadia_AlidadeSmooth, 
+   Stadia_StamenTerrain,
+];
 
+let currentMapTileIndex = 0;
+baseMaps[currentMapTileIndex].addTo(map);
+
+function switchTile(direction) {
+    map.removeLayer(baseMaps[currentMapTileIndex]);
+    currentMapTileIndex = (currentMapTileIndex + direction + baseMaps.length) % baseMaps.length;
+    baseMaps[currentMapTileIndex].addTo(map);
+}
+
+document.getElementById('tile-prev').addEventListener('click', function() {
+   switchTile(-1); 
+});
+
+document.getElementById('tile-next').addEventListener('click', function() {
+   switchTile(1); 
+});
+
+// PM25 tiff files visualized with terrcotta
+var terracottaUrl = 'http://localhost:5000/singleband/{date}/{z}/{x}/{y}.png?colormap=pm25&stretch_range=[0,150]';
+var pm25Layer = L.tileLayer(terracottaUrl.replace('{date}', date_today), { zIndex: 2 }).addTo(map);
+
+// geojson layer with province boundary
 var geojsonFeature = null;
 
 function loadGeoJSON(filePath) {
@@ -90,14 +197,6 @@ function loadGeoJSON(filePath) {
                     mouseout: resetHighlight
                 });
 
-                // if (feature.properties && feature.properties.NAME_1) {
-                //     layer.bindTooltip(feature.properties.NAME_1, {
-                //         permanent: true,   
-                //         direction: "center",
-                //         className: "province-label" 
-                //     }).openTooltip();
-                // }
-
                 if (feature.properties && feature.properties.NAME_1) {
                     var center = layer.getBounds().getCenter();
 
@@ -132,18 +231,53 @@ function loadGeoJSON(filePath) {
         .catch(error => console.error('Lỗi:', error));
 }
 
-// split
 loadGeoJSON('data2/VNnew34.json');
 
-map.on('click', async function(e) {
-    var lat = e.latlng.lat.toFixed(5);
-    var lon = e.latlng.lng.toFixed(5);
-    var pm25Value = await getPM25(lat, lon, date);
+// ------------------------------------ //
+// ---------- MAP INTERACTION ----------//
+// ------------------------------------ //
 
-    document.getElementById('sidebar-content').innerHTML = `
-        Date: ${date    }
-        <br>Lat: ${lat}, Lon: ${lon}
-        <br>PM2.5: ${pm25Value !== null ? pm25Value.toFixed(2) + ' µg/m³' : 'Không có dữ liệu'}`;
+// popup and marker showing when clicking on the map
+map.on('click', async function(e) {
+    const lat = parseFloat(e.latlng.lat.toFixed(5));
+    const lon = parseFloat(e.latlng.lng.toFixed(5))
+    const { rawDates, formattedDates } = get11DaysAround(date);
+    const pm25Values = [];
+    const test = await getPM25(lat, lon, date);
+
+    var table = "Không có dữ liệu";
+    if (test != null) {
+        for (let i = 0; i < rawDates.length; i++) {
+            const pm25Value = await getPM25(lat, lon, rawDates[i]);
+            pm25Values.push(pm25Value);
+        }
+
+        const sidebar = document.getElementById("PM25-chart");
+        sidebar.innerHTML = "";  
+
+        const trace = {
+            x: formattedDates,
+            y: pm25Values,
+            type: 'bar', // "bar" "scatter"
+            mode: 'lines+markers'
+        };
+
+        const layout = {
+            margin: { t: 20, r: 20, l: 30, b: 100},
+            xaxis: { tickangle: -45 },
+            yaxis: { title: "PM2.5" }
+        };
+
+        Plotly.newPlot(sidebar, [trace], layout);
+        table = renderPM25Table(formattedDates, pm25Values)
+    }
+
+    if (currentMarker) {
+        map.removeLayer(currentMarker);
+    }
+    
+    currentMarker = L.marker([lat, lon]).addTo(map)
+        .openPopup();
 });
 
 // Điều khiển phóng to/thu nhỏ/cố định
@@ -199,9 +333,8 @@ document.querySelector('.popup').addEventListener('click', function(e) {
 // Xử lý chọn ngày
 window.addEventListener('updateMapWithNewDate', (e) => {
     var newDate = e.detail;
+    date = newDate;
     var newUrl = terracottaUrl.replace('{date}', newDate);
     pm25Layer.setUrl(newUrl);
     map.invalidateSize(); 
-    console.log("Map updated for date: " + newDate);
-    console.log(newUrl);
 });

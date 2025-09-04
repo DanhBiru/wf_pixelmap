@@ -182,7 +182,7 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 3;
+    z-index: 5;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -523,12 +523,12 @@ body {
     border-radius: var(--border-radius-G);
     position: relative;
     background: linear-gradient(to top, 
-        #7E0023 0% 10%,  /* xanh lá */
-        #8F3F97 18% 28%,  /* vàng */
-        #FF0000 36% 46%,  /* cam */
-        #FF7E00 54% 64%,  /* đỏ */
-        #FFFF00 72% 82%,  /* tím */
-        #00E400 90% 100%  /* nâu đỏ */
+        #7E0023 0% 10%,
+        #8F3F97 18% 28%, 
+        #FF0000 36% 46%, 
+        #FF7E00 54% 64%,  
+        #FFFF00 72% 82%, 
+        #00E400 90% 100% 
     );
 }
 
@@ -556,7 +556,7 @@ body {
     width: 100vw;
 }
 
-/* text on leaflet map */ 
+/* leaflet elements configuration */ 
 .leaflet-tooltip.province-label {
     font-size: 16px;
     font-weight: bold;
@@ -569,4 +569,8 @@ body {
         1px -1px 0 white,
         -1px  1px 0 white,
         1px  1px 0 white;
+}
+
+.leaflet-popup-content p {
+    margin: 3px 0 !important;
 }
