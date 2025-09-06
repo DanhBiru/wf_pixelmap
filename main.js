@@ -55,7 +55,7 @@ function get11DaysAround(dateStr) {
         const m = String(d.getMonth() + 1).padStart(2, '0');
         const dd = String(d.getDate()).padStart(2, '0');
 
-        formattedDates.push(`${dd}/${m}/${y}`)
+        formattedDates.push(`${dd}/${m}`)
         rawDates.push(`${y}${m}${dd}`);
     }
 
@@ -91,13 +91,13 @@ function renderPM25Table(dates, values) {
 
 // map initialization
 var map = L.map('map', {
-    center: [16.0, 108.0],
+    center: [16.0, 102.0],
     zoom: 6,
     zoomControl: false,
     minZoom: 6,   
     maxZoom: 12, 
     maxBounds: [
-        [7.18, 101.14],   
+        [7.18, 96.14],   
         [24.39, 110.46]   
     ],
     maxBoundsViscosity: 1.0 
@@ -131,10 +131,10 @@ var Stadia_StamenTerrain = L.tileLayer('https://tiles.stadiamaps.com/tiles/stame
 });
 
 const baseMaps = [
-   OpenStreetMap_Mapnik,
    Stadia_AlidadeSatellite,
    Stadia_AlidadeSmooth, 
    Stadia_StamenTerrain,
+   OpenStreetMap_Mapnik
 ];
 
 let currentMapTileIndex = 0;
@@ -241,34 +241,92 @@ loadGeoJSON('data2/VNnew34.json');
 map.on('click', async function(e) {
     const lat = parseFloat(e.latlng.lat.toFixed(5));
     const lon = parseFloat(e.latlng.lng.toFixed(5))
-    const { rawDates, formattedDates } = get11DaysAround(date);
+    const { rawDates, formattedDates } = get11DaysAround(date_today);
     const pm25Values = [];
-    const test = await getPM25(lat, lon, date);
+    const pm25today = await getPM25(lat, lon, date);
 
     var table = "Không có dữ liệu";
-    if (test != null) {
+    if (pm25today != null) {
+        const sidebarPM25 = document.getElementById("sidebar-pm25index");
+        sidebarPM25.innerHTML = `<p>Nồng độ bụi mịn PM25: ${pm25today.toFixed(2)} μg/m³</p>`;  
+
+        let colorVar;
+        if (pm25today < 12) {
+            colorVar = "--pm25-1-bg";
+        } else if (pm25today < 35) {
+            colorVar = "--pm25-2-bg";
+        } else if (pm25today < 55) {
+            colorVar = "--pm25-3-bg";
+        } else if (pm25today < 150) {
+            colorVar = "--pm25-4-bg";
+        } else if (pm25today < 250) {
+            colorVar = "--pm25-5-bg";
+        } else {
+            colorVar = "--pm25-6-bg";
+        }
+
+        sidebarPM25.style.backgroundColor = `var(${colorVar})`;
+
+        //
         for (let i = 0; i < rawDates.length; i++) {
             const pm25Value = await getPM25(lat, lon, rawDates[i]);
             pm25Values.push(pm25Value);
         }
 
-        const sidebar = document.getElementById("PM25-chart");
-        sidebar.innerHTML = "";  
+        const chart = document.getElementById("sidebar-chart");
+        chart.innerHTML = "";  
+
+        const ymin = Math.min(...pm25Values) - 5;
+        const ymax = Math.max(...pm25Values) + 5;
+
+        const pm25Bands = [
+            {min: 0,    max: 12,  color: "rgb(0,228,0)"},     
+            {min: 12,   max: 35,  color: "rgb(255,255,0)"},   
+            {min: 35,   max: 55,  color: "rgb(255,126,0)"},   
+            {min: 55,   max: 150, color: "rgb(255,0,0)"},    
+            {min: 150,  max: 250, color: "rgb(143,63,151)"},  
+            {min: 250,  max: 500, color: "rgb(126,0,35)"}     
+        ];
+
+        const visibleBands = pm25Bands.filter(b => b.max >= ymin && b.min <= ymax);
+
+        const shapes = visibleBands.map(b => ({
+            type: "rect",
+            xref: "paper",
+            yref: "y",
+            x0: 0,
+            x1: 1,
+            y0: Math.max(b.min, ymin),
+            y1: Math.min(b.max, ymax),
+            fillcolor: b.color,
+            opacity: 0.7,   
+            line: {width: 0},
+            layer: "below"
+        }));
 
         const trace = {
             x: formattedDates,
             y: pm25Values,
-            type: 'bar', // "bar" "scatter"
-            mode: 'lines+markers'
+            type: 'scatter', // "bar" "scatter"
+            mode: 'lines+markers',
+            hoverinfo: 'skip',
+            line: {color: "#0057FC"},
+            opacity: 1,
         };
 
         const layout = {
-            margin: { t: 20, r: 20, l: 30, b: 100},
-            xaxis: { tickangle: -45 },
-            yaxis: { title: "PM2.5" }
+            margin: { t: 20, r: 20, l: 30, b: 50},
+            shapes: shapes,
+            dragmode: false,
+            hovermode: false,
+            xaxis: { tickangle: -45, showgrid: false },
+            yaxis: { title: "PM2.5", range: [ymin, ymax], showgrid: true, dtick: 2 }
         };
-
-        Plotly.newPlot(sidebar, [trace], layout);
+        
+        const config = {
+            displayModeBar: false,
+        }
+        Plotly.newPlot(chart, [trace], layout, config);
         table = renderPM25Table(formattedDates, pm25Values)
     }
 

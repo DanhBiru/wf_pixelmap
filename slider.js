@@ -14,7 +14,7 @@ for (let i = 0; i < 22; i++) {
         display: String(date.getDate()).padStart(2, '0') + '-' + 
                 String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                 date.getFullYear(),
-        isToday: date.toDateString() === new Date('2025-10-3').toDateString()
+        isToday: date.toDateString() === new Date('2021-10-4').toDateString()
     });
 }
 
@@ -98,7 +98,7 @@ function togglePlay() {
                 // Kết thúc, quay lại pause
                 togglePlay();
             }
-        }, 500); // Thay đổi mỗi 500ms
+        }, 1000); // Thay đổi mỗi 500ms
     }
 }
 
