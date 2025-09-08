@@ -6,6 +6,26 @@ var date_today = '20211004';
 var date = '20211004'; //TODO: đổi tên biến này thành today
 let currentMarker = null;
 
+let pm25scale = [12,25,35,55,150,250]; // PM25 standard
+let pm25colors = ["#00e400b3", "#ffff00b3", "#ff7e00b3", "#ff0000b3", "#8f3f97b3", "#7e0023b3"]; 
+let pm25labels = ["Tốt", "Trung bình", "Không lành mạnh cho nhóm nhạy cảm", "Không lành mạnh", "Rất không lành mạnh", "Nguy hại"];
+let pm25notes = [
+    "Chất lượng không khí được coi là đạt yêu cầu, ô nhiễm không khí hầu như không gây rủi ro",
+    "Chất lượng không khí có thể chấp nhận được; tuy nhiên, với một số chất ô nhiễm có thể có mối lo ngại ở mức vừa phải đối với một số ít người nhạy cảm bất thường với ô nhiễm không khí",
+    "Các nhóm nhạy cảm có thể gặp các tác động sức khỏe; công chúng nói chung ít có khả năng bị ảnh hưởng",
+    "Mọi người có thể bắt đầu chịu tác động đến sức khỏe; các nhóm nhạy cảm có thể chịu tác động nghiêm trọng hơn",
+    "Cảnh báo sức khỏe trong điều kiện khẩn cấp. Toàn bộ dân số có khả năng bị ảnh hưởng",
+    "Cảnh báo sức khỏe: mọi người có thể chịu các tác động nghiêm trọng hơn"
+] // source: aqicn.org
+let pm25messages = [
+    "Không có khuyến cáo",
+    "Trẻ em năng động, người lớn, và những người mắc bệnh hô hấp như hen suyễn nên hạn chế hoạt động gắng sức kéo dài ngoài trời",
+    "Trẻ em năng động, người lớn, và những người mắc bệnh hô hấp như hen suyễn nên hạn chế hoạt động gắng sức kéo dài ngoài trời",
+    "Trẻ em năng động, người lớn, và những người mắc bệnh hô hấp như hen suyễn nên tránh hoạt động gắng sức kéo dài ngoài trời; mọi người khác, đặc biệt là trẻ em, nên hạn chế hoạt động gắng sức ngoài trời",
+    "Trẻ em năng động, người lớn, và những người mắc bệnh hô hấp như hen suyễn nên tránh mọi hoạt động ngoài trời; mọi người khác, đặc biệt là trẻ em, nên hạn chế hoạt động ngoài trời",
+    "Tất cả mọi người nên tránh mọi hoạt động ngoài trời"
+] // source: aqicn.org
+
 // ---------------------------------------- //
 // ---------- HELPER FUNCTIONS ------------ //
 // ---------------------------------------- //
@@ -109,12 +129,19 @@ var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
 
-var Stadia_AlidadeSmooth = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}', {
-	minZoom: 0,
-	maxZoom: 20,
-	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	ext: 'png'
-});
+var OSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+})
+
+var Carto_light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd'
+})
+
+var Carto_dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd'
+})
 
 var Stadia_AlidadeSatellite = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}', {
 	minZoom: 0,
@@ -123,18 +150,12 @@ var Stadia_AlidadeSatellite = L.tileLayer('https://tiles.stadiamaps.com/tiles/al
 	ext: 'jpg'
 });
 
-var Stadia_StamenTerrain = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.{ext}', {
-	minZoom: 0,
-	maxZoom: 18,
-	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	ext: 'png'
-});
-
 const baseMaps = [
    OpenStreetMap_Mapnik,
-   Stadia_AlidadeSatellite,
-   Stadia_AlidadeSmooth, 
-   Stadia_StamenTerrain
+   Carto_light,
+   Carto_dark,
+   OSM,
+   Stadia_AlidadeSatellite
 ];
 
 let currentMapTileIndex = 0;
@@ -237,36 +258,71 @@ loadGeoJSON('data2/VNnew34.json');
 // ---------- MAP INTERACTION ----------//
 // ------------------------------------ //
 
+var { rawDates, formattedDates } = get11DaysAround(date_today);
+
+async function updateSidebarPM25andAdvice(pm25today) {
+    let bg_color, label, message;
+    let text_color = "#000000";
+    for (let i = 0; i < 6; i++) {
+        if (pm25today < pm25scale[i]) {
+            bg_color = pm25colors[i];
+            label = pm25labels[i];
+            note = pm25notes[i];
+            message = pm25messages[i];
+            if (i >= 3) {
+                text_color = "#ffffff";
+            }
+            break;
+        }
+    }
+
+    const sidebarPM25 = document.getElementById("sidebar-pm25index");
+    sidebarPM25.innerHTML = `
+        <p>Nồng độ bụi mịn PM25: ${pm25today.toFixed(2)} μg/m³</p>
+        <p>Chất lượng không khí hiện tại: <strong>${label}</strong></p>
+        <p>${note}</p>    
+    `;  
+
+    sidebarPM25.style.backgroundColor = `${bg_color}`;
+    sidebarPM25.style.color = `${text_color}`;
+
+    const sidebarMessage = document.getElementById("sidebar-message");
+    sidebarMessage.innerHTML = `
+        <p><strong>Khuyến cáo</strong>: ${message}</p>    
+    `;  
+}
+
+async function updateSidebarInfo(lat, lon) {
+    const sidebarInfo = document.getElementById("sidebar-info");
+
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=vi`;
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data);
+
+    const address1 = data.address.city || data.address.state;
+    const address2 = data.address.county || data.address.borough || data.address.city_district || data.address.suburb || "undefined";
+
+    sidebarInfo.innerHTML = `
+        <p>Thứ Bảy, ngày 6 tháng 9 năm 2025</p>
+        <p>${address1}, ${address2}</p>
+        <p>Vĩ độ: ${lat.toFixed(5)}, Kinh độ: ${lon.toFixed(5)}</p>
+    `;  
+}
+
 // popup and marker showing when clicking on the map
 map.on('click', async function(e) {
     const lat = parseFloat(e.latlng.lat.toFixed(5));
     const lon = parseFloat(e.latlng.lng.toFixed(5))
-    const { rawDates, formattedDates } = get11DaysAround(date_today);
     const pm25Values = [];
     const pm25today = await getPM25(lat, lon, date);
 
     var table = "Không có dữ liệu";
     if (pm25today != null) {
-        const sidebarPM25 = document.getElementById("sidebar-pm25index");
-        sidebarPM25.innerHTML = `<p>Nồng độ bụi mịn PM25: ${pm25today.toFixed(2)} μg/m³</p>`;  
-
-        let colorVar;
-        if (pm25today < 12) {
-            colorVar = "--pm25-1-bg";
-        } else if (pm25today < 35) {
-            colorVar = "--pm25-2-bg";
-        } else if (pm25today < 55) {
-            colorVar = "--pm25-3-bg";
-        } else if (pm25today < 150) {
-            colorVar = "--pm25-4-bg";
-        } else if (pm25today < 250) {
-            colorVar = "--pm25-5-bg";
-        } else {
-            colorVar = "--pm25-6-bg";
-        }
-
-        sidebarPM25.style.backgroundColor = `var(${colorVar})`;
-
+        await Promise.all([
+            updateSidebarPM25andAdvice(pm25today),
+            updateSidebarInfo(lat, lon)
+        ]);
         //
         for (let i = 0; i < rawDates.length; i++) {
             const pm25Value = await getPM25(lat, lon, rawDates[i]);
@@ -314,13 +370,19 @@ map.on('click', async function(e) {
             opacity: 1,
         };
 
-        const layout = {
-            margin: { t: 20, r: 20, l: 30, b: 50},
+      const layout = {
+            title: {
+                text: "Biểu đồ PM2.5 theo ngày",
+                font: { size: 20 },
+                x: 0.5, //[0, 1]
+                xanchor: 'center'
+            },
+            margin: { t: 40, r: 20, l: 30, b: 50},
             shapes: shapes,
             dragmode: false,
             hovermode: false,
             xaxis: { tickangle: -45, showgrid: false },
-            yaxis: { title: "PM2.5", range: [ymin, ymax], showgrid: true, dtick: 2, gridcolor: "rgba(0,0,0,0.8)" }
+            yaxis: { title: "PM2.5", range: [ymin, ymax], showgrid: true, dtick: 5, gridcolor: "rgba(0,0,0,0.8)" }
         };
         
         const config = {

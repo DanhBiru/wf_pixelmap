@@ -318,6 +318,7 @@ body {
     overflow: hidden;
     box-shadow: var(--box-shadow);
     transition: width 0.3s ease;
+    overflow-y: auto;
 }
 
 .sidebar-header {
@@ -333,15 +334,15 @@ body {
     font-size: 1.2rem;
 }
 
-.sidebar-date, .sidebar-pm25index, .sidebar-advice, .sidebar-chart {
+.sidebar-info, .sidebar-pm25index, .sidebar-message, .sidebar-chart {
     background-color: rgba(0,0,0,0.5);
     margin: 0 var(--margin-F);
     border-radius: var(--border-radius-E);
     padding: 8px 16px;
 }
 
-.sidebar-date {
-    background-color: #eee;
+.sidebar-info {
+    background-color: #f5e0dc66;
 }
 
 .sidebar-pm25index {
@@ -349,16 +350,19 @@ body {
     color: #000;
 }
 
-.sidebar-date {
+.sidebar-info {
     background-color: #eee;
 }
 
 .sidebar-chart {
     padding: 0;
-    overflow: hidden;
-    height: fit-content;
+
 }
 
+.sidebar-message {
+    background-color: #0057FC44;
+    color: #000;
+}
 /* slider */
 .timeline-control {
     z-index: 3;
