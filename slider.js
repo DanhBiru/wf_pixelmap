@@ -98,7 +98,7 @@ function togglePlay() {
                 // Kết thúc, quay lại pause
                 togglePlay();
             }
-        }, 1000); // Thay đổi mỗi 500ms
+        }, 2000); // Thay đổi mỗi 500ms
     }
 }
 

@@ -131,10 +131,10 @@ var Stadia_StamenTerrain = L.tileLayer('https://tiles.stadiamaps.com/tiles/stame
 });
 
 const baseMaps = [
+   OpenStreetMap_Mapnik,
    Stadia_AlidadeSatellite,
    Stadia_AlidadeSmooth, 
-   Stadia_StamenTerrain,
-   OpenStreetMap_Mapnik
+   Stadia_StamenTerrain
 ];
 
 let currentMapTileIndex = 0;
@@ -320,7 +320,7 @@ map.on('click', async function(e) {
             dragmode: false,
             hovermode: false,
             xaxis: { tickangle: -45, showgrid: false },
-            yaxis: { title: "PM2.5", range: [ymin, ymax], showgrid: true, dtick: 2 }
+            yaxis: { title: "PM2.5", range: [ymin, ymax], showgrid: true, dtick: 2, gridcolor: "rgba(0,0,0,0.8)" }
         };
         
         const config = {
