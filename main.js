@@ -5,10 +5,20 @@
 var date_today = '20211004';
 var date = '20211004'; //TODO: đổi tên biến này thành today
 let currentMarker = null;
+var isDEM = false;
+
+const pm25Bands = [
+    {min: 0,    max: 12,  color: "rgb(0,228,0)"},     
+    {min: 12,   max: 35,  color: "rgb(255,255,0)"},   
+    {min: 35,   max: 55,  color: "rgb(255,126,0)"},   
+    {min: 55,   max: 150, color: "rgb(255,0,0)"},    
+    {min: 150,  max: 250, color: "rgb(143,63,151)"},  
+    {min: 250,  max: 500, color: "rgb(126,0,35)"}     
+];
 
 let pm25scale = [12,25,35,55,150,250]; // PM25 standard
 let pm25colors = ["#00e400b3", "#ffff00b3", "#ff7e00b3", "#ff0000b3", "#8f3f97b3", "#7e0023b3"]; 
-let pm25labels = ["Tốt", "Trung bình", "Không lành mạnh cho nhóm nhạy cảm", "Không lành mạnh", "Rất không lành mạnh", "Nguy hại"];
+let pm25labels = ["Tốt", "Trung bình", "Không lành mạnh", "Xấu", "Rất xấu", "Nguy hại"];
 let pm25notes = [
     "Chất lượng không khí được coi là đạt yêu cầu, ô nhiễm không khí hầu như không gây rủi ro",
     "Chất lượng không khí có thể chấp nhận được; tuy nhiên, với một số chất ô nhiễm có thể có mối lo ngại ở mức vừa phải đối với một số ít người nhạy cảm bất thường với ô nhiễm không khí",
@@ -58,7 +68,7 @@ async function getPM25(lat, lon, date) {
 }
 
 // get a string with 5 days before and after the given date in YYYYMMDD format
-function get11DaysAround(dateStr) {
+function getDaysAround(dateStr) {
     const year = parseInt(dateStr.slice(0, 4), 10);
     const month = parseInt(dateStr.slice(4, 6), 10) - 1; // JS month = 0-11
     const day = parseInt(dateStr.slice(6, 8), 10);
@@ -67,7 +77,7 @@ function get11DaysAround(dateStr) {
     const rawDates = [];
     const formattedDates = [];
 
-    for (let i = -4; i <= 4; i++) {
+    for (let i = -6; i <= 6; i++) {
         const d = new Date(baseDate);
         d.setDate(baseDate.getDate() + i);
 
@@ -125,12 +135,11 @@ var map = L.map('map', {
 
 // base map tiles and tile control button
 var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	maxZoom: 19,
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
 
-var OSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+var Esri = L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    attribution: "Tiles © Esri — Esri, DeLorme, NAVTEQ",
 })
 
 var Carto_light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -143,40 +152,18 @@ var Carto_dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}
     subdomains: 'abcd'
 })
 
-var Stadia_AlidadeSatellite = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}', {
-	minZoom: 0,
-	maxZoom: 20,
-	attribution: '&copy; CNES, Distribution Airbus DS, © Airbus DS, © PlanetObserver (Contains Copernicus Data) | &copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	ext: 'jpg'
-});
-
 const baseMaps = [
    OpenStreetMap_Mapnik,
    Carto_light,
    Carto_dark,
-   OSM,
-   Stadia_AlidadeSatellite
+   Esri
 ];
 
 let currentMapTileIndex = 0;
 baseMaps[currentMapTileIndex].addTo(map);
 
-function switchTile(direction) {
-    map.removeLayer(baseMaps[currentMapTileIndex]);
-    currentMapTileIndex = (currentMapTileIndex + direction + baseMaps.length) % baseMaps.length;
-    baseMaps[currentMapTileIndex].addTo(map);
-}
-
-document.getElementById('tile-prev').addEventListener('click', function() {
-   switchTile(-1); 
-});
-
-document.getElementById('tile-next').addEventListener('click', function() {
-   switchTile(1); 
-});
-
 // PM25 tiff files visualized with terrcotta
-var terracottaUrl = 'http://localhost:5000/singleband/{date}/{z}/{x}/{y}.png?colormap=pm25&stretch_range=[0,150]';
+var terracottaUrl = 'http://localhost:5000/singleband/PM25/{date}/{z}/{x}/{y}.png?colormap=pm25&stretch_range=[0,150]';
 var pm25Layer = L.tileLayer(terracottaUrl.replace('{date}', date_today), { zIndex: 2 }).addTo(map);
 
 // geojson layer with province boundary
@@ -258,7 +245,50 @@ loadGeoJSON('data2/VNnew34.json');
 // ---------- MAP INTERACTION ----------//
 // ------------------------------------ //
 
-var { rawDates, formattedDates } = get11DaysAround(date_today);
+//basemap tile control
+const options = document.querySelectorAll('#tileOptions .icon');
+
+const saved = localStorage.getItem('selectedTile');
+if (saved) {
+    options.forEach(btn => btn.classList.remove('selected'));
+    const target = document.querySelector(`#tileOptions .icon[data-index="${saved}"]`);
+    if (target) target.classList.add('selected');
+}
+
+options.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const index = btn.dataset.index;
+        options.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        localStorage.setItem('selectedTile', index);
+        console.log(index);
+
+        switchTile(index - 1);
+    });
+});
+
+function switchTile(index) {
+    map.removeLayer(baseMaps[currentMapTileIndex]);
+    currentMapTileIndex = index;
+    baseMaps[currentMapTileIndex].addTo(map);
+}
+
+// toggle DEM
+document.getElementById('toggleDEM').addEventListener('click', function() {
+    var newUrl = '';
+    if (isDEM) {
+        terracottaUrl = 'http://localhost:5000/singleband/PM25/{date}/{z}/{x}/{y}.png?colormap=pm25&stretch_range=[0,150]';
+        newUrl = terracottaUrl.replace('{date}', date);
+        isDEM = false;
+    } else {
+        newUrl = 'http://localhost:5000/singleband/DEM/00000000/{z}/{x}/{y}.png?colormap=gist_earth&stretch_range=[0,2578]';
+        isDEM = true; 
+    } 
+    pm25Layer.setUrl(newUrl);
+    map.invalidateSize(); 
+});
+
+var { rawDates, formattedDates } = getDaysAround(date_today);
 
 async function updateSidebarPM25andAdvice(pm25today) {
     let bg_color, label, message;
@@ -278,9 +308,17 @@ async function updateSidebarPM25andAdvice(pm25today) {
 
     const sidebarPM25 = document.getElementById("sidebar-pm25index");
     sidebarPM25.innerHTML = `
-        <p>Nồng độ bụi mịn PM25: ${pm25today.toFixed(2)} μg/m³</p>
-        <p>Chất lượng không khí hiện tại: <strong>${label}</strong></p>
-        <p>${note}</p>    
+        <div>
+            <div>
+                <div class="info-title">Không khí</div>
+                <div class="info-text">${label}</div>
+            </div>  
+            <div>
+                <div class="info-title">PM25</div>
+                <div class="info-pm25">${pm25today.toFixed(2)}</div>
+            </div>
+        </div>
+        <div class="info-review">${note}</div>
     `;  
 
     sidebarPM25.style.backgroundColor = `${bg_color}`;
@@ -300,13 +338,13 @@ async function updateSidebarInfo(lat, lon) {
     const data = await response.json();
     console.log(data);
 
-    const address1 = data.address.city || data.address.state;
-    const address2 = data.address.county || data.address.borough || data.address.city_district || data.address.suburb || "undefined";
+    const address1 = data.address.state || data.address.city;
+    const address2 = data.address.county || data.address.borough || data.address.city_district || data.address.suburb || data.address.town || data.address.city || "undefined";
 
     sidebarInfo.innerHTML = `
-        <p>Thứ Bảy, ngày 6 tháng 9 năm 2025</p>
+        <p>Ngày 6/9/2025</p>
         <p>${address1}, ${address2}</p>
-        <p>Vĩ độ: ${lat.toFixed(5)}, Kinh độ: ${lon.toFixed(5)}</p>
+        <p>Vĩ độ: ${lat.toFixed(3)}, Kinh độ: ${lon.toFixed(3)}</p>
     `;  
 }
 
@@ -315,7 +353,7 @@ map.on('click', async function(e) {
     const lat = parseFloat(e.latlng.lat.toFixed(5));
     const lon = parseFloat(e.latlng.lng.toFixed(5))
     const pm25Values = [];
-    const pm25today = await getPM25(lat, lon, date);
+    const pm25today = await getPM25(lat, lon, date_today);
 
     var table = "Không có dữ liệu";
     if (pm25today != null) {
@@ -334,15 +372,6 @@ map.on('click', async function(e) {
 
         const ymin = Math.min(...pm25Values) - 5;
         const ymax = Math.max(...pm25Values) + 5;
-
-        const pm25Bands = [
-            {min: 0,    max: 12,  color: "rgb(0,228,0)"},     
-            {min: 12,   max: 35,  color: "rgb(255,255,0)"},   
-            {min: 35,   max: 55,  color: "rgb(255,126,0)"},   
-            {min: 55,   max: 150, color: "rgb(255,0,0)"},    
-            {min: 150,  max: 250, color: "rgb(143,63,151)"},  
-            {min: 250,  max: 500, color: "rgb(126,0,35)"}     
-        ];
 
         const visibleBands = pm25Bands.filter(b => b.max >= ymin && b.min <= ymax);
 
@@ -365,24 +394,36 @@ map.on('click', async function(e) {
             y: pm25Values,
             type: 'scatter', // "bar" "scatter"
             mode: 'lines+markers',
-            hoverinfo: 'skip',
+            marker: {
+                symbol: 'square',
+                size: 10
+            },
+            // hoverinfo: 'skip',
             line: {color: "#0057FC"},
+            hovertemplate: 
+                'Ngày: %{x}<br>' +
+                '<b>PM25:<b> %{y:.2f}<br>' + 
+                '<extra></extra>',
+            hoverlabel: {
+                bgcolor: "rgba(255,255,255,0.8",
+                bordercolor: "#003fb4",
+                padding: "5px"
+            },
             opacity: 1,
         };
 
       const layout = {
-            title: {
-                text: "Biểu đồ PM2.5 theo ngày",
-                font: { size: 20 },
-                x: 0.5, //[0, 1]
-                xanchor: 'center'
-            },
-            margin: { t: 40, r: 20, l: 30, b: 50},
+            // title: {
+            //     text: "Biểu đồ PM2.5 theo ngày",
+            //     font: { size: 20 },
+            //     x: 0.5, //[0, 1]
+            //     xanchor: 'center'
+            // },
+            margin: { t: 20, r: 20, l: 45, b: 70},
             shapes: shapes,
             dragmode: false,
-            hovermode: false,
-            xaxis: { tickangle: -45, showgrid: false },
-            yaxis: { title: "PM2.5", range: [ymin, ymax], showgrid: true, dtick: 5, gridcolor: "rgba(0,0,0,0.8)" }
+            xaxis: { title: {text: "Thời gian", font: { family: "Roboto", size: 15 }}, tickangle: -45, showgrid: false, dtick: 2 },
+            yaxis: { title: {text: "PM2.5", font: { family: "Poppins", size: 15 }}, range: [ymin, ymax], showgrid: true, dtick: 5, gridcolor: "rgba(0,0,0,0.8)" }
         };
         
         const config = {
@@ -452,9 +493,11 @@ document.querySelector('.popup').addEventListener('click', function(e) {
 
 // Xử lý chọn ngày
 window.addEventListener('updateMapWithNewDate', (e) => {
-    var newDate = e.detail;
-    date = newDate;
-    var newUrl = terracottaUrl.replace('{date}', newDate);
-    pm25Layer.setUrl(newUrl);
-    map.invalidateSize(); 
+    if (!isDEM) {
+        var newDate = e.detail;
+        date = newDate;
+        var newUrl = terracottaUrl.replace('{date}', newDate);
+        pm25Layer.setUrl(newUrl);
+        map.invalidateSize(); 
+    }
 });
