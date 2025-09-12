@@ -2,8 +2,8 @@
 // ---------- GLOBAL VARIABLES ------------ //
 // ---------------------------------------- //
 
-var date_today = '20211004';
-var date = '20211004'; //TODO: đổi tên biến này thành today
+var date_today = '20211006';
+var date = '20211006'; //TODO: đổi tên biến này thành today
 let currentMarker = null;
 var isDEM = false;
 
@@ -16,7 +16,7 @@ const pm25Bands = [
     {min: 250,  max: 500, color: "rgb(126,0,35)"}     
 ];
 
-let pm25scale = [12,25,35,55,150,250]; // PM25 standard
+let pm25scale = [12,35,55,150,250,350]; // PM25 standard
 let pm25colors = ["#00e400b3", "#ffff00b3", "#ff7e00b3", "#ff0000b3", "#8f3f97b3", "#7e0023b3"]; 
 let pm25labels = ["Tốt", "Trung bình", "Không lành mạnh", "Xấu", "Rất xấu", "Nguy hại"];
 let pm25notes = [
@@ -294,7 +294,7 @@ async function updateSidebarPM25andAdvice(pm25today) {
     let bg_color, label, message;
     let text_color = "#000000";
     for (let i = 0; i < 6; i++) {
-        if (pm25today < pm25scale[i]) {
+        if (pm25today <= pm25scale[i]) {
             bg_color = pm25colors[i];
             label = pm25labels[i];
             note = pm25notes[i];

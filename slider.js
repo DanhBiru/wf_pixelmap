@@ -5,7 +5,7 @@ window.onload = function() {
 
 // Tạo dữ liệu ngày
 const dates = [];
-var startDate = new Date('2021-09-20');
+var startDate = new Date('2021-09-22');
 
 for (let i = 0; i < 22; i++) {
     const date = new Date(startDate);
@@ -14,7 +14,7 @@ for (let i = 0; i < 22; i++) {
         display: String(date.getDate()).padStart(2, '0') + '-' + 
                 String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                 date.getFullYear(),
-        isToday: date.toDateString() === new Date('2021-10-4').toDateString()
+        isToday: date.toDateString() === new Date('2021-10-6').toDateString()
     });
 }
 

@@ -372,7 +372,6 @@ body {
 }
 
 .sidebar-info, .sidebar-pm25index, .sidebar-message, .sidebar-chart {
-    background-color: rgba(0,0,0,0.5);
     margin: 0 var(--margin-F);
     border-radius: var(--border-radius-E);
     padding: 8px 16px;
@@ -440,7 +439,7 @@ body {
 
 .sidebar-chart {
     padding: 0;
-
+    background-color: #f5e0dc66;
 }
 
 .sidebar-message {
