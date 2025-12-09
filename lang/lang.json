@@ -1,0 +1,76 @@
+{
+    "vi": {
+        "title": "Hệ thống dự báo chất lượng không khí Việt Nam",
+        "sidebar": {
+            "title": "Dự báo chất lượng không khí",
+            "info": {
+                "title": "Chất lượng không khí",
+                "text": {
+                    "air-quality": "Không khí",
+                    "pm25": "PM2.5"
+                },
+                "label": {
+                    "0": "Tốt",
+                    "1": "Trung bình",
+                    "2": "Không lành mạnh",
+                    "3": "Xấu", 
+                    "4": "Rất xấu",
+                    "5": "Nguy hại"
+                },
+                "note": {
+                    "0":"Chất lượng không khí được coi là đạt yêu cầu, ô nhiễm không khí hầu như không gây rủi ro",
+                    "1": "Chất lượng không khí có thể chấp nhận được; tuy nhiên, với một số chất ô nhiễm có thể có mối lo ngại ở mức vừa phải đối với một số ít người nhạy cảm bất thường với ô nhiễm không khí",
+                    "2": "Các nhóm nhạy cảm có thể gặp các tác động sức khỏe; công chúng nói chung ít có khả năng bị ảnh hưởng",
+                    "3": "Mọi người có thể bắt đầu chịu tác động đến sức khỏe; các nhóm nhạy cảm có thể chịu tác động nghiêm trọng hơn",
+                    "4": "Cảnh báo sức khỏe trong điều kiện khẩn cấp. Toàn bộ dân số có khả năng bị ảnh hưởng",
+                    "5": "Cảnh báo sức khỏe: mọi người có thể chịu các tác động nghiêm trọng hơn"
+                },
+                "message": {
+                    "default": "Khuyến cáo",
+                    "0": "Không có khuyến cáo",
+                    "1": "Trẻ em năng động, người lớn, và những người mắc bệnh hô hấp như hen suyễn nên hạn chế hoạt động gắng sức kéo dài ngoài trời",
+                    "2": "Trẻ em năng động, người lớn, và những người mắc bệnh hô hấp như hen suyễn nên hạn chế hoạt động gắng sức kéo dài ngoài trời",
+                    "3": "Trẻ em năng động, người lớn, và những người mắc bệnh hô hấp như hen suyễn nên tránh hoạt động gắng sức kéo dài ngoài trời; mọi người khác, đặc biệt là trẻ em, nên hạn chế hoạt động gắng sức ngoài trời",
+                    "4": "Trẻ em năng động, người lớn, và những người mắc bệnh hô hấp như hen suyễn nên tránh mọi hoạt động ngoài trời; mọi người khác, đặc biệt là trẻ em, nên hạn chế hoạt động ngoài trời",
+                    "5": "Tất cả mọi người nên tránh mọi hoạt động ngoài trời"
+                },
+                "placeholder": "Chọn một vị trí bất kì để hiển thị thông tin"
+            }
+        }
+    },
+    "en": {
+        "title": "Vietnam Air Quality Forecast System",
+        "sidebar": {
+            "title": "Air Quality Forecast",
+            "info": {
+                "title": "Air Quality",
+                "label": {
+                    "1": "Good",
+                    "2": "Moderate",
+                    "3": "Unhealthy for Sensitive Groups",
+                    "4": "Unhealthy",
+                    "5": "Very Unhealthy",
+                    "6": "Hazardous"
+                },
+                "note": {
+                    "1": "Air quality is considered satisfactory, and air pollution poses little or no risk",
+                    "2": "Air quality is acceptable; however, there may be a moderate health concern for a very small number of people who are unusually sensitive to air pollution",
+                    "3": "Members of sensitive groups may experience health effects; the general public is not likely to be affected",
+                    "4": "Everyone may begin to experience health effects; members of sensitive groups may experience more serious effects",
+                    "5": "Health alert: emergency conditions. The entire population is more likely to be affected",
+                    "6": "Health warning: everyone may experience more serious health effects"
+                },
+                "message": {
+                    "default": "Advisory",
+                    "1": "No advisory",
+                    "2": "Active children, adults, and people with respiratory diseases such as asthma should limit prolonged outdoor exertion",
+                    "3": "Active children, adults, and people with respiratory diseases such as asthma should limit prolonged outdoor exertion",
+                    "4": "Active children, adults, and people with respiratory diseases such as asthma should avoid prolonged outdoor exertion; everyone else, especially children, should limit outdoor activity",
+                    "5": "Active children, adults, and people with respiratory diseases such as asthma should avoid all outdoor activity; everyone else, especially children, should limit outdoor activity",
+                    "6": "Everyone should avoid all outdoor activity"
+                },
+                "placeholder": "Select any location to display information"
+            }
+        }
+    }
+}
