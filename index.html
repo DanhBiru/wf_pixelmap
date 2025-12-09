@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title"></title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <!-- Bản đồ -->
+    <div id="map"></div>
+
+    <!-- Logo và thanh điều khiển -->
+    <div id="controls" class="controls">
+        <div class="zoom-controls">
+            <button id="resetZoom" class="icon"><span class="material-icons">fullscreen</span></button>
+            <button id="zoomIn" class="icon"><span class="material-icons">add</span></button>
+            <button id="zoomOut" class="icon"><span class="material-icons">remove</span></button>
+        </div>
+        <span class="filler"></span>
+        <div class="zoom-controls" id="mapControlsContainer">
+            <button id="mapInfoBtn" class="icon"><span class="material-icons">info</span></button>
+            <div class="tile-controls">
+                <button id="tileControl" class="icon"><span class="material-icons" style="font-size: 24px; width: 24px; height: 24px;">arrow_left</span></button>
+                <div class="tile-options" id="tileOptions">
+                    <button class="icon" value="OpenStreetMap_Mapnik">1</button>
+                    <button class="icon" value="Carto_light">2</button>
+                    <button class="icon" value="Carto_dark">3</button>
+                    <button class="icon" value="Esri">4</button>
+                </div>
+            </div>
+        </div>
+        <span class="filler"></span>
+        <div class="zoom-controls">
+            <button id="toggleDEM" class="icon"><span class="material-icons" style="font-size: 24px; width: 24px; height: 24px;">layers</span></button>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <div class="popup-header">
+                <h2 class="popup-title">Chú thích</h2>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <span class="highlight">Đóng</span>
+                    <button class="popup-close" id="closeBtn">×</button>
+                </div>
+            </div>
+            
+            <div class="popup-content">
+                <div class="section">
+                    <h3 class="section-title">Dữ liệu mô hình là gì?</h3>
+                    <div class="section-content">
+                        Là các dữ liệu trung bình ngày PM2.5 được ước tính từ các mô hình số trị thời tiết toàn cầu kết hợp với dữ liệu nguồn gốc khí tượng, sử dụng đất, địa hình, phát thải, và dữ liệu quan trắc. Chỉ số chất lượng không khí theo quy chuẩn Viện Nam (AQI VN) được quy đổi từ <span class="highlight">PM2.5</span> trung bình ngày theo Quyết định <span class="highlight">1459/QĐ-TCMT</span>. Bản đồ AQI VN và PM2.5 trung bình ngày có độ phân giải không gian 1x1km, nghĩa là một điểm đại diện cho một khu vực 1km2 trên mặt đất. Dữ liệu dự báo được cập nhật hàng ngày và dự báo cho 7 ngày tiếp theo.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">Dữ liệu quan trắc là gì?</h3>
+                    <div class="section-content">
+                        Là các dữ liệu trung bình giờ PM2.5 được đo đạc được tại các trạm quan trắc trên mặt đất. Dữ liệu các trạm quan trắc được thu thập từ 3 nguồn chính:
+                        
+                        <ul class="source-list">
+                            <li>Trung tâm Quan trắc Môi trường miền Bắc</li>
+                            <li>Cục Bảo vệ Môi trường Hà Nội (Hanoi EPA)</li>
+                            <li>và các trạm đặt tại Đại Sứ quán và Lãnh Sự quán Mỹ</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h1 data-i18n="sidebar.title" class="sidebar-title"></h1>
+            <button class="page-switch" id="menuBtn">
+                <span class="material-icons" style="font-size: 22px; color: #333; user-select: none;">menu</span>
+            </button>  
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-section">
+                    <div class="section-label">Ngôn ngữ</div>
+                    <select class="language-select" id="languageSelect">
+                        <option value="vi">Tiếng Việt</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </div>
+                
+                <div class="dropdown-section">
+                    <a href="AIchatbot.html" class="nav-button">
+                        <span class="material-icons">smart_toy</span>
+                        <span>AI Chatbot</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-info">
+                <div>
+                    <button class="icon" style="background-color: #DDD;">
+                        <span class="material-icons" style="font-size: 24px; width: 24px; height: 24px;">bolt</span>
+                    </button>
+                </div>
+
+                <div id="sidebar-info">
+                    <p>Ngày 6/9/2025</p>
+                </div>
+            </div>
+            <div class="sidebar-pm25index" id="sidebar-pm25index">
+                <div>
+                    <div>
+                        <div data-i18n="sidebar.text.air" class="info-title">Không khí</div>
+                        <div class="info-text"></div>
+                    </div>  
+                    <div>
+                        <div data-i18n="sidebar.text.pm25" class="info-title">PM25</div>
+                        <div class="info-pm25"></div>
+                    </div>
+                </div>
+                <div class="info-review"></div>
+            </div>
+            <div class="sidebar-message" id="sidebar-message">
+                <p data-i18n="sidebar.message.default"><strong>Khuyến cáo</strong></p>
+            </div>
+            <div class="sidebar-chart" id="sidebar-chart">
+                <div class="placeholder" style="width: auto; height: 300px; justify-content: center; align-items: center; display: flex;">
+                    <p data-i18n="sidebar.placeholder">Chọn một vị trí để hiển thị thông tin</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="color-scale-container">
+            <div class="color-bar"></div>
+            <div class="scale-labels">
+                <div class="scale-label">0</div>
+                <div class="scale-label">12</div>
+                <div class="scale-label">35</div>
+                <div class="scale-label">55</div>
+                <div class="scale-label">150</div>
+                <div class="scale-label">250</div>
+            </div>
+        </div>
+
+        <div class="timeline-control">
+            <div class="timeline-header">
+                <button class="play-btn" id="playBtn"><span class="material-icons">play_arrow</span></button>
+            </div>
+
+            <div class="timeline-slider">
+                <div class="slider-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <input type="range" class="slider-input" id="timeSlider" min="0" max="21" value="14" step="1">
+                <div class="date-labels" id="dateLabels"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.min.js"></script>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/geotiff"></script> -->
+
+    <!-- <script src="slider.js"></script> -->
+    <!-- <script src="lang/lang.js"></script> -->
+    <!-- <script src="main.js"></script> -->
+    <script type="module" src="main_test.js"></script>
+</body>
+</html>
