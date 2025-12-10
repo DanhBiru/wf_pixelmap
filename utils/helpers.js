@@ -3,7 +3,7 @@ import { province_latlon } from "./scale.js";
 // get PM25 value by tracing from tif file's pixel value by values of longtitude, latitude and date
 export async function getPM25(lat, lon, date) {
     // load GeoTIFF
-    var filePath = "../data/PM25_" + date + "_3km.tif"
+    var filePath = "./data/PM25_" + date + "_3km.tif"
     const tiff = await GeoTIFF.fromUrl(filePath)
     const image = await tiff.getImage();
 
