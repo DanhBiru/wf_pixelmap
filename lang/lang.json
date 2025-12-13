@@ -47,6 +47,31 @@
                 "Cục Bảo vệ Môi trường Hà Nội (Hanoi EPA)",
                 "Các trạm đặt tại Đại Sứ quán và Lãnh Sự quán Mỹ"
             ]
+        },
+        "AIpage": {
+            "pageTitle": "Chỉ số chất lượng không khí cả nước",
+            "menu": "menu",
+            "language": "Ngôn ngữ",
+            "home": "Trang chủ",
+            "selectDate": "Chọn ngày:",
+            "today": "Hôm nay",
+            "yesterday": "Hôm qua",
+            "lowestPollution": "Ít ô nhiễm nhất",
+            "highestPollution": "Ô nhiễm nhất",
+            "nationalAverage": "Trung bình cả nước",
+            "allCountry": "Toàn quốc",
+            "loading": "Đang tải...",
+            "pm25Unit": "μg/m³ PM2.5",
+            "aiAssistant": "Trợ lý ảo AI",
+            "aiWelcome": "Xin chào! Tôi là trợ lý AI về chất lượng không khí. Tôi có thể giúp bạn hiểu về AQI, tình trạng không khí tại các tỉnh thành, và các biện pháp bảo vệ sức khỏe. Bạn muốn hỏi gì?",
+            "aiTyping": "AI đang trả lời...",
+            "askPlaceholder": "Hỏi về chất lượng không khí...",
+            "send": "Gửi",
+            "whatIsPM25": "PM2.5 là gì?",
+            "mostPolluted": "Tỉnh nào ô nhiễm nhất?",
+            "healthProtection": "Bảo vệ sức khỏe",
+            "vietnamese": "Tiếng Việt",
+            "english": "English"
         }
     },
     "en": {
@@ -97,6 +122,31 @@
                 "Hanoi Environmental Protection Agency (Hanoi EPA)",
                 "Stations located at U.S. Embassies and Consulates"
             ]        
-        }    
+        },
+        "AIpage": {
+            "pageTitle": "National Air Quality Index",
+            "menu": "menu",
+            "language": "Language",
+            "home": "Home",
+            "selectDate": "Select date:",
+            "today": "Today",
+            "yesterday": "Yesterday",
+            "lowestPollution": "Least Polluted",
+            "highestPollution": "Most Polluted",
+            "nationalAverage": "National Average",
+            "allCountry": "Nationwide",
+            "loading": "Loading...",
+            "pm25Unit": "μg/m³ PM2.5",
+            "aiAssistant": "AI Assistant",
+            "aiWelcome": "Hello! I'm an AI assistant for air quality. I can help you understand AQI, air quality conditions in provinces and cities, and health protection measures. What would you like to know?",
+            "aiTyping": "AI is typing...",
+            "askPlaceholder": "Ask about air quality...",
+            "send": "Send",
+            "whatIsPM25": "What is PM2.5?",
+            "mostPolluted": "Most polluted city?",
+            "healthProtection": "Health Protection",
+            "vietnamese": "Vietnamese",
+            "english": "English"
+        }
     }
 }

@@ -1,6 +1,11 @@
 import { DEFAULT_DATE, DEFAULT_DATE_d } from "../map_layers/terracotta.js";
 import { getPM25whole, getAvgPM25, getMaxPM25, getMinPM25 } from "../utils/helpers.js";
+import { getLang, initLang } from "../lang/lang.js";
 import "../ui/navbtn.js";
+
+document.addEventListener('DOMContentLoaded', () => {
+    initLang();
+});
 
 let stat_date = DEFAULT_DATE;
 let formatted_stat_date = DEFAULT_DATE_d;
@@ -39,6 +44,7 @@ async function updateStats() {
 
 function plotPM25Ranking(list, domId) {
     const sorted = [...list].sort((a, b) => b.pm25 - a.pm25);
+    const text = getLang() == "vi" ? "Xếp hạng PM2.5 theo tỉnh thành ngày" : "PM2.5 ranking by province/city"
 
     const data = [{
         x: sorted.map(item => item.name),
@@ -48,7 +54,7 @@ function plotPM25Ranking(list, domId) {
     }];
 
     const layout = {
-        title: {"text": `Xếp hạng PM2.5 theo tỉnh thành ngày ${formatted_stat_date.toLocaleDateString("vi-VN")}`},
+        title: {"text": `${text} ${formatted_stat_date.toLocaleDateString("vi-VN")}`},
         xaxis: {
             tickangle: -45
         },

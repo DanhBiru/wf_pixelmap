@@ -513,32 +513,32 @@
             <div class="header-controls">
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <button class="page-switch" id="menuBtn">
-                        <span class="material-icons">menu</span>
+                        <span class="material-icons" data-i18n="AIpage.menu">menu</span>
                     </button>
                     
                     <div class="dropdown-menu" id="dropdownMenu">
                         <div class="dropdown-section">
-                            <div class="section-label">Ngôn ngữ</div>
+                            <div class="section-label" data-i18n="AIpage.language">Ngôn ngữ</div>
                             <select class="language-select" id="languageSelect">
-                                <option value="vi">Tiếng Việt</option>
-                                <option value="en">English</option>
+                                <option value="vi" data-i18n="AIpage.vietnamese">Tiếng Việt</option>
+                                <option value="en" data-i18n="AIpage.english">English</option>
                             </select>
                         </div>
                         
                         <div class="dropdown-section">
                             <a href="index.html" class="nav-button">
                                 <span class="material-icons">home</span>
-                                <span>Trang chủ</span>
+                                <span data-i18n="AIpage.home">Trang chủ</span>
                             </a>
                         </div>
                     </div>
-                    <h1>Chỉ số chất lượng không khí cả nước</h1>
+                    <h1 data-i18n="AIpage.pageTitle">Chỉ số chất lượng không khí cả nước</h1>
                 </div>
                 <div class="date-selector">
-                    <label for="dateSelect">Chọn ngày:</label>
+                    <label for="dateSelect" data-i18n="AIpage.selectDate">Chọn ngày:</label>
                     <select id="dateSelect" class="date-dropdown">
-                        <option value="2021-10-20">Hôm nay - 20/10/2021</option>
-                        <option value="2021-10-19">Hôm qua - 19/10/2021</option>
+                        <option value="2021-10-20"><span data-i18n="AIpage.today">Hôm nay - 20/10/2021</span></option>
+                        <option value="2021-10-19"><span data-i18n="yesterday">Hôm qua - 19/10/2021</span></option>
                         <option value="2021-10-18">18/10/2021</option>
                         <option value="2021-10-17">17/10/2021</option>
                         <option value="2021-10-16">16/10/2021</option>
@@ -547,25 +547,26 @@
             </div>
 
             <div class="stats-grid">
+
                 <div class="stat-card lowest">
-                    <div class="stat-label">Ít ô nhiễm nhất</div>
-                    <div class="stat-city" id="lowestCity">Đang tải...</div>
+                    <div class="stat-label" data-i18n="AIpage.lowestPollution">Ít ô nhiễm nhất</div>
+                    <div class="stat-city" id="lowestCity" data-i18n="AIpage.loading">Đang tải...</div>
                     <div class="stat-value" id="lowestValue">--</div>
-                    <div class="stat-unit">μg/m³ PM2.5</div>
+                    <div class="stat-unit" data-i18n="AIpage.pm25Unit">μg/m³ PM2.5</div>
                 </div>
 
                 <div class="stat-card highest">
-                    <div class="stat-label">Ô nhiễm nhất</div>
-                    <div class="stat-city" id="highestCity">Đang tải...</div>
+                    <div class="stat-label" data-i18n="AIpage.highestPollution">Ô nhiễm nhất</div>
+                    <div class="stat-city" id="highestCity" data-i18n="AIpage.loading">Đang tải...</div>
                     <div class="stat-value" id="highestValue">--</div>
-                    <div class="stat-unit">μg/m³ PM2.5</div>
+                    <div class="stat-unit" data-i18n="AIpage.pm25Unit">μg/m³ PM2.5</div>
                 </div>
 
                 <div class="stat-card average">
-                    <div class="stat-label">Trung bình cả nước</div>
-                    <div class="stat-city">Toàn quốc</div>
+                    <div class="stat-label" data-i18n="AIpage.nationalAverage">Trung bình cả nước</div>
+                    <div class="stat-city" data-i18n="AIpage.allCountry">Toàn quốc</div>
                     <div class="stat-value" id="avgValue">--</div>
-                    <div class="stat-unit">μg/m³ PM2.5</div>
+                    <div class="stat-unit" data-i18n="AIpage.pm25Unit">μg/m³ PM2.5</div>
                 </div>
 
                 <!-- Biểu đồ placeholder -->
@@ -578,25 +579,25 @@
         <div class="chatbot-panel">
             <div class="chat-header">
                 <span>✨</span>
-                <span>Trợ lý ảo AI </span>
+                <span data-i18n="AIpage.aiAssistant">Trợ lý ảo AI </span>
             </div>
             
             <div class="chat-messages" id="chatMessages">
                 <div class="message bot">
                     <div class="message-avatar">AI</div>
-                    <div class="message-content">
+                    <div class="message-content" data-i18n="AIpage.aiWelcome">
                         Xin chào! Tôi là trợ lý AI về chất lượng không khí. Tôi có thể giúp bạn hiểu về AQI, tình trạng không khí tại các tỉnh thành, và các biện pháp bảo vệ sức khỏe. Bạn muốn hỏi gì?
                     </div>
                 </div>
             </div>
 
-            <div class="typing-indicator" id="typingIndicator">AI đang trả lời...</div>
+            <div class="typing-indicator" id="typingIndicator" data-i18n="AIpage.aiTyping">AI đang trả lời...</div>
 
             <div class="chat-input-container">
                 <div class="quick-questions">
-                    <div class="quick-question" onclick="askQuestion('PM2.5 là gì?')">PM2.5 là gì?</div>
-                    <div class="quick-question" onclick="askQuestion('Tỉnh nào ô nhiễm nhất?')">Tỉnh nào ô nhiễm nhất?</div>
-                    <div class="quick-question" onclick="askQuestion('Làm sao để bảo vệ sức khỏe?')">Bảo vệ sức khỏe</div>
+                    <div class="quick-question" onclick="askQuestion('PM2.5 là gì?')" data-i18n="AIpage.whatIsPM25">PM2.5 là gì?</div>
+                    <div class="quick-question" onclick="askQuestion('Tỉnh nào ô nhiễm nhất?')" data-i18n="AIpage.mostPolluted">Tỉnh nào ô nhiễm nhất?</div>
+                    <div class="quick-question" onclick="askQuestion('Làm sao để bảo vệ sức khỏe?')" data-i18n="AIpage.healthProtection">Bảo vệ sức khỏe</div>
                 </div>
                 <div class="chat-input-wrapper">
                     <input 
@@ -604,9 +605,10 @@
                         class="chat-input" 
                         id="chatInput" 
                         placeholder="Hỏi về chất lượng không khí..."
+                        data-i18n-placeholder="AIpage.askPlaceholder"
                         onkeypress="if(event.key==='Enter') sendMessage()"
                     >
-                    <button class="send-btn" onclick="sendMessage()">Gửi</button>
+                    <button class="send-btn" onclick="sendMessage()" data-i18n="AIpage.send">Gửi</button>
                 </div>
             </div>
         </div>
