@@ -429,16 +429,16 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             min-width: 220px;
             opacity: 0;
-            visibility: visible;
+            visibility: hidden;
             transform: translateX(-10px);
             transition: all 0.3s ease;
-            z-index: 1000;
+            z-index: 100;
         }
 
         .dropdown-menu.active {
             opacity: 1;
             visibility: visible;
-            transform: translateX(0);
+            transform: translateX(0px);
         }
 
         .dropdown-section {
@@ -613,7 +613,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.min.js"></script>
-    <script type="module" src="AIpage/AIpage.js"></script>
-    <script src="ui/navbtn.js"></script>
+    <script type="module" src="AIpage/AIpage.js"></script>  
 </body>
 </html>

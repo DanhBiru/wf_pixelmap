@@ -1,3 +1,5 @@
+import { setLang } from "../lang/lang.js";
+
 const menuBtn = document.getElementById('menuBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
 const languageSelect = document.getElementById('languageSelect');
@@ -23,6 +25,5 @@ document.addEventListener('click', (e) => {
 languageSelect.addEventListener('change', (e) => {
     const selectedLang = e.target.value;
     console.log('Đã chọn ngôn ngữ:', selectedLang);
-    // Thêm logic xử lý thay đổi ngôn ngữ ở đây
-    alert(`Đã chuyển sang: ${e.target.options[e.target.selectedIndex].text}`);
+    setLang(selectedLang);
 });

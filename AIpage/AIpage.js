@@ -1,5 +1,6 @@
 import { DEFAULT_DATE, DEFAULT_DATE_d } from "../map_layers/terracotta.js";
 import { getPM25whole, getAvgPM25, getMaxPM25, getMinPM25 } from "../utils/helpers.js";
+import "../ui/navbtn.js";
 
 let stat_date = DEFAULT_DATE;
 let formatted_stat_date = DEFAULT_DATE_d;
@@ -153,7 +154,7 @@ Thông tin về PM2.5:
 - 150.5+: Rất xấu (màu tím)
         `.trim();
 
-        const response = await fetch("/groq", {
+        const response = await fetch("http://localhost:3000/groq", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userMessage, context })

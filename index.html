@@ -43,31 +43,24 @@
     <div class="popup-overlay" id="popupOverlay">
         <div class="popup">
             <div class="popup-header">
-                <h2 class="popup-title">Chú thích</h2>
+                <h2 class="popup-title" data-i18n="about.title"></h2>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <span class="highlight">Đóng</span>
+                    <span class="highlight" data-i18n="about.close"></span>
                     <button class="popup-close" id="closeBtn">×</button>
                 </div>
             </div>
             
             <div class="popup-content">
                 <div class="section">
-                    <h3 class="section-title">Dữ liệu mô hình là gì?</h3>
-                    <div class="section-content">
-                        Là các dữ liệu trung bình ngày PM2.5 được ước tính từ các mô hình số trị thời tiết toàn cầu kết hợp với dữ liệu nguồn gốc khí tượng, sử dụng đất, địa hình, phát thải, và dữ liệu quan trắc. Chỉ số chất lượng không khí theo quy chuẩn Viện Nam (AQI VN) được quy đổi từ <span class="highlight">PM2.5</span> trung bình ngày theo Quyết định <span class="highlight">1459/QĐ-TCMT</span>. Bản đồ AQI VN và PM2.5 trung bình ngày có độ phân giải không gian 1x1km, nghĩa là một điểm đại diện cho một khu vực 1km2 trên mặt đất. Dữ liệu dự báo được cập nhật hàng ngày và dự báo cho 7 ngày tiếp theo.
-                    </div>
+                    <h3 class="section-title" data-i18n="about.model_data_title"></h3>
+                    <div class="section-content" data-i18n="about.model_data_text"></div>
                 </div>
 
                 <div class="section">
-                    <h3 class="section-title">Dữ liệu quan trắc là gì?</h3>
+                    <h3 class="section-title" data-i18n="about.obs_data_title"></h3>
                     <div class="section-content">
-                        Là các dữ liệu trung bình giờ PM2.5 được đo đạc được tại các trạm quan trắc trên mặt đất. Dữ liệu các trạm quan trắc được thu thập từ 3 nguồn chính:
-                        
-                        <ul class="source-list">
-                            <li>Trung tâm Quan trắc Môi trường miền Bắc</li>
-                            <li>Cục Bảo vệ Môi trường Hà Nội (Hanoi EPA)</li>
-                            <li>và các trạm đặt tại Đại Sứ quán và Lãnh Sự quán Mỹ</li>
-                        </ul>
+                        <span data-i18n="about.obs_data_text"></span>
+                        <ul class="source-list" data-i18n="about.obs_sources"></ul>
                     </div>
                 </div>
             </div>
@@ -87,9 +80,6 @@
                     <select class="language-select" id="languageSelect">
                         <option value="vi">Tiếng Việt</option>
                         <option value="en">English</option>
-                        <option value="ja">日本語</option>
-                        <option value="ko">한국어</option>
-                        <option value="zh">中文</option>
                     </select>
                 </div>
                 
@@ -110,28 +100,19 @@
                 </div>
 
                 <div id="sidebar-info">
-                    <p>Ngày 6/9/2025</p>
+                    <p class="loading" data-i18n="sidebar.loading"></p>
                 </div>
             </div>
             <div class="sidebar-pm25index" id="sidebar-pm25index">
-                <div>
-                    <div>
-                        <div data-i18n="sidebar.text.air" class="info-title">Không khí</div>
-                        <div class="info-text"></div>
-                    </div>  
-                    <div>
-                        <div data-i18n="sidebar.text.pm25" class="info-title">PM25</div>
-                        <div class="info-pm25"></div>
-                    </div>
-                </div>
-                <div class="info-review"></div>
+                <p class="loading" data-i18n="sidebar.loading"></p>
             </div>
             <div class="sidebar-message" id="sidebar-message">
-                <p data-i18n="sidebar.message.default"><strong>Khuyến cáo</strong></p>
+                <p class="loading" data-i18n="sidebar.loading"></p>
             </div>
             <div class="sidebar-chart" id="sidebar-chart">
                 <div class="placeholder" style="width: auto; height: 300px; justify-content: center; align-items: center; display: flex;">
-                    <p data-i18n="sidebar.placeholder">Chọn một vị trí để hiển thị thông tin</p>
+                    <p data-i18n="sidebar.info.placeholder">
+            </p>
                 </div>
             </div>
         </div>

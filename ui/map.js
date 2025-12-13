@@ -3,6 +3,7 @@ import { getDaysAround, getPM25 } from "../utils/helpers.js";
 import { DEFAULT_DATE, currentDate } from "../map_layers/terracotta.js";
 
 import { pm25Bands } from "../utils/scale.js";
+import { getLang } from "../lang/lang.js";
 
 var currentMarker = null;
 var date_today = currentDate;
@@ -54,6 +55,7 @@ function plottingChart(formattedDates, pm25Values) {
     const ymin = Math.min(...pm25Values) - 5;
     const ymax = Math.max(...pm25Values) + 5;
 
+    const date_text = getLang() === "vi" ? "Ngày" : "Date"; 
     const visibleBands = pm25Bands.filter(b => b.max >= ymin && b.min <= ymax);
 
     const shapes = visibleBands.map(b => ({
@@ -82,7 +84,7 @@ function plottingChart(formattedDates, pm25Values) {
         // hoverinfo: 'skip',
         line: {color: "#0057FC"},
         hovertemplate: 
-            'Ngày: %{x}<br>' +
+            `${date_text}: %{x}<br>` +
             '<b>PM25:<b> %{y:.2f}<br>' + 
             '<extra></extra>',
         hoverlabel: {
@@ -97,7 +99,7 @@ function plottingChart(formattedDates, pm25Values) {
         margin: { t: 20, r: 20, l: 45, b: 70},
         shapes: shapes,
         dragmode: false,
-        xaxis: { title: {text: "Thời gian", font: { family: "Roboto", size: 15 }}, tickangle: -45, showgrid: false, dtick: 2 },
+        xaxis: { title: {text: date_text, font: { family: "Roboto", size: 15 }}, tickangle: -45, showgrid: false, dtick: 2 },
         yaxis: { title: {text: "PM2.5", font: { family: "Poppins", size: 15 }}, range: [ymin, ymax], showgrid: true, dtick: 5, gridcolor: "rgba(0,0,0,0.8)" }
     };
     

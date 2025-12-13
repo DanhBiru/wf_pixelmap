@@ -2,14 +2,12 @@
     "vi": {
         "title": "Hệ thống dự báo chất lượng không khí Việt Nam",
         "sidebar": {
+            "loading": "Đang tải ...",
             "title": "Dự báo chất lượng không khí",
             "info": {
                 "title": "Chất lượng không khí",
-                "text": {
-                    "air-quality": "Không khí",
-                    "pm25": "PM2.5"
-                },
                 "label": {
+                    "default": "Không khí",
                     "0": "Tốt",
                     "1": "Trung bình",
                     "2": "Không lành mạnh",
@@ -36,41 +34,69 @@
                 },
                 "placeholder": "Chọn một vị trí bất kì để hiển thị thông tin"
             }
+        },
+        "about": {
+            "title": "Chú thích",
+            "close": "Đóng",
+            "model_data_title": "Dữ liệu mô hình là gì?",
+            "model_data_text": "Là các dữ liệu trung bình ngày PM2.5 được ước tính từ các mô hình số trị thời tiết toàn cầu kết hợp với dữ liệu nguồn gốc khí tượng, sử dụng đất, địa hình, phát thải, và dữ liệu quan trắc. Chỉ số chất lượng không khí theo quy chuẩn Việt Nam (AQI VN) được quy đổi từ PM2.5 trung bình ngày theo Quyết định 1459/QĐ-TCMT. Bản đồ AQI VN và PM2.5 trung bình ngày có độ phân giải không gian 1x1km, nghĩa là một điểm đại diện cho một khu vực 1km2 trên mặt đất. Dữ liệu dự báo được cập nhật hàng ngày và dự báo cho 7 ngày tiếp theo.",
+            "obs_data_title": "Dữ liệu quan trắc là gì?",
+            "obs_data_text": "Là các dữ liệu trung bình giờ PM2.5 được đo đạc tại các trạm quan trắc trên mặt đất. Dữ liệu các trạm quan trắc được thu thập từ 3 nguồn chính:",
+            "obs_sources": [
+                "Trung tâm Quan trắc Môi trường miền Bắc",
+                "Cục Bảo vệ Môi trường Hà Nội (Hanoi EPA)",
+                "Các trạm đặt tại Đại Sứ quán và Lãnh Sự quán Mỹ"
+            ]
         }
     },
     "en": {
         "title": "Vietnam Air Quality Forecast System",
         "sidebar": {
+            "loading": "Please wait ...",
             "title": "Air Quality Forecast",
             "info": {
                 "title": "Air Quality",
                 "label": {
-                    "1": "Good",
-                    "2": "Moderate",
-                    "3": "Unhealthy for Sensitive Groups",
-                    "4": "Unhealthy",
-                    "5": "Very Unhealthy",
-                    "6": "Hazardous"
+                    "default": "Air Quality",
+                    "0": "Good",
+                    "1": "Moderate",
+                    "2": "Unhealthy for Sensitive Groups",
+                    "3": "Unhealthy",
+                    "4": "Very Unhealthy",
+                    "5": "Hazardous"
                 },
                 "note": {
-                    "1": "Air quality is considered satisfactory, and air pollution poses little or no risk",
-                    "2": "Air quality is acceptable; however, there may be a moderate health concern for a very small number of people who are unusually sensitive to air pollution",
-                    "3": "Members of sensitive groups may experience health effects; the general public is not likely to be affected",
-                    "4": "Everyone may begin to experience health effects; members of sensitive groups may experience more serious effects",
-                    "5": "Health alert: emergency conditions. The entire population is more likely to be affected",
-                    "6": "Health warning: everyone may experience more serious health effects"
+                    "0": "Air quality is considered satisfactory, and air pollution poses little or no risk",
+                    "1": "Air quality is acceptable; however, there may be a moderate health concern for a very small number of people who are unusually sensitive to air pollution",
+                    "2": "Members of sensitive groups may experience health effects; the general public is not likely to be affected",
+                    "3": "Everyone may begin to experience health effects; members of sensitive groups may experience more serious effects",
+                    "4": "Health alert: emergency conditions. The entire population is more likely to be affected",
+                    "5": "Health warning: everyone may experience more serious health effects"
                 },
                 "message": {
                     "default": "Advisory",
-                    "1": "No advisory",
+                    "0": "No advisory",
+                    "1": "Active children, adults, and people with respiratory diseases such as asthma should limit prolonged outdoor exertion",
                     "2": "Active children, adults, and people with respiratory diseases such as asthma should limit prolonged outdoor exertion",
-                    "3": "Active children, adults, and people with respiratory diseases such as asthma should limit prolonged outdoor exertion",
-                    "4": "Active children, adults, and people with respiratory diseases such as asthma should avoid prolonged outdoor exertion; everyone else, especially children, should limit outdoor activity",
-                    "5": "Active children, adults, and people with respiratory diseases such as asthma should avoid all outdoor activity; everyone else, especially children, should limit outdoor activity",
-                    "6": "Everyone should avoid all outdoor activity"
+                    "3": "Active children, adults, and people with respiratory diseases such as asthma should avoid prolonged outdoor exertion; everyone else, especially children, should limit outdoor activity",
+                    "4": "Active children, adults, and people with respiratory diseases such as asthma should avoid all outdoor activity; everyone else, especially children, should limit outdoor activity",
+                    "5": "Everyone should avoid all outdoor activity"
                 },
                 "placeholder": "Select any location to display information"
             }
-        }
+        },
+        "about": {
+            "title": "About",
+            "close": "Close",
+            "model_data_title": "What is model data?",
+            "model_data_text": "These are daily-average PM2.5 values estimated from global numerical weather prediction models combined with meteorological source data, land-use information, terrain, emissions, and monitoring data. The Vietnam Air Quality Index (AQI VN) is converted from the daily-average PM2.5 based on Decision 1459/QĐ-TCMT. The AQI VN map and daily-average PM2.5 map have a spatial resolution of 1x1 km, meaning each point represents a 1 km² area on the ground. Forecast data are updated daily and provide predictions for the next 7 days.",
+            "obs_data_title": "What is observational data?",
+            "obs_data_text": "These are hourly-average PM2.5 values measured at ground-based monitoring stations. The monitoring data come from three main sources:",
+            "obs_sources": [
+                "Northern Center for Environmental Monitoring",
+                "Hanoi Environmental Protection Agency (Hanoi EPA)",
+                "Stations located at U.S. Embassies and Consulates"
+            ]        
+        }    
     }
 }

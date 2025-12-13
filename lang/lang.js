@@ -3,11 +3,20 @@ import { initScales } from "../utils/scale.js";
 var currenLang = 'vi';
 
 export function initLang() {
+    const savedLang = localStorage.getItem("lang") || "vi";
+    currenLang = savedLang;
     loadLang();
 }
 
 export function getLang() {
     return currenLang;
+}
+
+export function setLang(lang) {
+    currenLang = lang;
+    loadLang()
+    localStorage.setItem("lang", lang);
+    location.reload();
 }
 
 async function loadLang() {

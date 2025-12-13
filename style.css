@@ -404,7 +404,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 220px;
     opacity: 0;
-    visibility: visible;
+    visibility: hidden;
     transform: translateX(-20px);
     transition: all 0.3s ease;
     z-index: 1000;
@@ -413,7 +413,7 @@ body {
 .dropdown-menu.active {
     opacity: 1;
     visibility: visible;
-    transform: translateX(0);
+    transform: translateX(0px);
 }
 
 .dropdown-section {
@@ -479,6 +479,15 @@ body {
 .nav-button .material-icons {
     font-size: 18px;
     color: white;
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
 .sidebar-content {
