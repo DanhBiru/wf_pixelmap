@@ -65,24 +65,32 @@ export async function getPM25whole(date) {
   return result;
 }
 
-export function getMinPM25(list) {
-  let min = list[0];
-  for (const item of list) {
-    if (item.pm25 < min.pm25) min = item;
-  }
-  return {"name": min.name, "pm25": min.pm25};
+export function getStats(list) {
+    let min = list[0];
+    let max = list[0];
+    let sum = 0;
+    let badCount = 0;
+    for (const item of list) {
+        if (item.pm25 < min.pm25) min = item;
+        if (item.pm25 > max.pm25) max = item;
+        sum += item.pm25; 
+        if (item.pm25 > 35.5) badCount++;
+    }
+    return [
+        {"name": min.name, "pm25": min.pm25},
+        {"name": max.name, "pm25": max.pm25},
+        sum / list.length,
+        badCount
+    ]
 }
 
-export function getMaxPM25(list) {
-  let max = list[0];
-  for (const item of list) {
-    if (item.pm25 > max.pm25) max = item;
-  }
-  return {"name": max.name, "pm25": max.pm25};
-}
+export function observePlotResize(chartId) {
+  const el = document.getElementById(chartId);
+  if (!el) return;
 
-export function getAvgPM25(list) {
-  let sum = 0;
-  for (const item of list) sum += item.pm25;
-  return sum / list.length;
+  const ro = new ResizeObserver(() => {
+    Plotly.Plots.resize(el);
+  });
+
+  ro.observe(el);
 }

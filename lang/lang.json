@@ -59,9 +59,11 @@
             "lowestPollution": "Ít ô nhiễm nhất",
             "highestPollution": "Ô nhiễm nhất",
             "nationalAverage": "Trung bình cả nước",
-            "allCountry": "Toàn quốc",
+            "badQuality": "Tỉnh thành ô nhiễm",
+            "provinces": "tỉnh",
+            "allCountry": "",
             "loading": "Đang tải...",
-            "pm25Unit": "μg/m³ PM2.5",
+            "pm25Unit": "μg/m³",
             "aiAssistant": "Trợ lý ảo AI",
             "aiWelcome": "Xin chào! Tôi là trợ lý AI về chất lượng không khí. Tôi có thể giúp bạn hiểu về AQI, tình trạng không khí tại các tỉnh thành, và các biện pháp bảo vệ sức khỏe. Bạn muốn hỏi gì?",
             "aiTyping": "AI đang trả lời...",
@@ -71,7 +73,13 @@
             "mostPolluted": "Tỉnh nào ô nhiễm nhất?",
             "healthProtection": "Bảo vệ sức khỏe",
             "vietnamese": "Tiếng Việt",
-            "english": "English"
+            "english": "English",
+            "note": {
+                "lowest": "Tỉnh thành có giá trị chỉ số PM2.5 thấp nhất",
+                "highest": "Tỉnh thành có giá trị chỉ số PM2.5 cao nhất",
+                "average": "Giá trị trung bình của chỉ số PM2.5 trên 32 tỉnh thành",
+                "badQuality": "Số tỉnh thành có chỉ số PM2.5 lớn hơn 55.5 μg/m"
+            }
         }
     },
     "en": {
@@ -134,9 +142,11 @@
             "lowestPollution": "Least Polluted",
             "highestPollution": "Most Polluted",
             "nationalAverage": "National Average",
-            "allCountry": "Nationwide",
+            "badQuality": "Bad Air Quality",
+            "provinces": "provinces",
+            "allCountry": "",
             "loading": "Loading...",
-            "pm25Unit": "μg/m³ PM2.5",
+            "pm25Unit": "μg/m³",
             "aiAssistant": "AI Assistant",
             "aiWelcome": "Hello! I'm an AI assistant for air quality. I can help you understand AQI, air quality conditions in provinces and cities, and health protection measures. What would you like to know?",
             "aiTyping": "AI is typing...",
@@ -146,7 +156,13 @@
             "mostPolluted": "Most polluted city?",
             "healthProtection": "Health Protection",
             "vietnamese": "Vietnamese",
-            "english": "English"
+            "english": "English",
+            "note": {
+                "lowest": "Province with the lowest PM2.5 value",
+                "highest": "Province with the highest PM2.5 value",
+                "average": "Average PM2.5 value of all 32 provinces",
+                "badQuality": "Total of provinces having bad air quality with PM2.5 index greater than 35.5 μg/m"
+            }
         }
     }
 }

@@ -6,6 +6,13 @@ export function initLang() {
     const savedLang = localStorage.getItem("lang") || "vi";
     currenLang = savedLang;
     loadLang();
+    syncLanguageSelect();
+}
+
+function syncLanguageSelect() {
+    const select = document.getElementById("languageSelect");
+    if (!select) return;
+    select.value = getLang();
 }
 
 export function getLang() {

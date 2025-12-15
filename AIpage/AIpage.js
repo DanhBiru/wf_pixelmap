@@ -1,7 +1,11 @@
 import { DEFAULT_DATE, DEFAULT_DATE_d } from "../map_layers/terracotta.js";
-import { getPM25whole, getAvgPM25, getMaxPM25, getMinPM25 } from "../utils/helpers.js";
+import { getPM25whole, getStats, observePlotResize } from "../utils/helpers.js";
 import { getLang, initLang } from "../lang/lang.js";
 import "../ui/navbtn.js";
+
+observePlotResize("lineChart");
+observePlotResize("barChart1");
+observePlotResize("barChart2");
 
 document.addEventListener('DOMContentLoaded', () => {
     initLang();
@@ -10,47 +14,74 @@ document.addEventListener('DOMContentLoaded', () => {
 let stat_date = DEFAULT_DATE;
 let formatted_stat_date = DEFAULT_DATE_d;
 
+setDefaultDate(formatted_stat_date);
+
 // Dữ liệu mẫu về các tỉnh thành
 const cities = await getPM25whole(stat_date);
 
 // Cập nhật số liệu thống kê
+const els = {
+  lowestCity: document.getElementById('lowestCity'),
+  lowestValue: document.getElementById('lowestValue'),
+  highestCity: document.getElementById('highestCity'),
+  highestValue: document.getElementById('highestValue'),
+  badQualityCount: document.getElementById('badQualityCount'),
+  avgValue: document.getElementById('avgValue')
+};
+
+function setLoading(state) {
+  Object.values(els).forEach(el =>
+    el.classList.toggle('loading', state)
+  );
+}
+
 async function updateStats() {
     console.log('update', stat_date);
-    document.getElementById('lowestValue').classList.add('loading');
-    document.getElementById('lowestCity').classList.add('loading');
-    document.getElementById('highestValue').classList.add('loading');
-    document.getElementById('highestCity').classList.add('loading');
-    document.getElementById('avgValue').classList.add('loading');
+    setLoading(true);
 
     const pm25Values = await getPM25whole(stat_date);
-    const lowest = getMinPM25(pm25Values);
-    const highest = getMaxPM25(pm25Values);
-    const average = getAvgPM25(pm25Values).toFixed(1);
-    plotPM25Ranking(pm25Values, "chart");
+    const stats = getStats(pm25Values);
 
-    document.getElementById('lowestCity').textContent = lowest.name;
-    document.getElementById('lowestValue').textContent = lowest.pm25.toFixed(1);
-    document.getElementById('highestCity').textContent = highest.name;
-    document.getElementById('highestValue').textContent = highest.pm25.toFixed(1);
-    document.getElementById('avgValue').textContent = average;
+    const lowest = stats[0];
+    const highest = stats[1];
+    const average = stats[2].toFixed(1);
+    const badQualityCount = stats[3];
 
-    document.getElementById('lowestValue').classList.remove('loading');
-    document.getElementById('lowestCity').classList.remove('loading');
-    document.getElementById('highestValue').classList.remove('loading');
-    document.getElementById('highestCity').classList.remove('loading');
-    document.getElementById('avgValue').classList.remove('loading');
+    plotPM25Ranking(pm25Values, "barChart1");
+    // plotPM25Ranking(pm25Values, "barChart2");
+    plotPM25Ranking(pm25Values, "lineChart");
+
+    els.lowestCity.textContent = lowest.name;
+    els.lowestValue.textContent = lowest.pm25.toFixed(1);
+    els.highestCity.textContent = highest.name;
+    els.highestValue.textContent = highest.pm25.toFixed(1);
+    els.badQualityCount.textContent = badQualityCount;
+    els.avgValue.textContent = average;
+
+    setLoading(false);
     console.log("done update");
 }
 
 function plotPM25Ranking(list, domId) {
-    const sorted = [...list].sort((a, b) => b.pm25 - a.pm25);
-    const text = getLang() == "vi" ? "Xếp hạng PM2.5 theo tỉnh thành ngày" : "PM2.5 ranking by province/city"
+    const sorted = [...list].sort((a, b) => b.pm25 - a.pm25).slice(0, 15);;
+    const text = getLang() == "vi" ? "Xếp hạng PM2.5 theo 15 tỉnh thành ngày" : "PM2.5 ranking by 15 provinces"
 
     const data = [{
         x: sorted.map(item => item.name),
         y: sorted.map(item => item.pm25),
         type: "bar",
-        hoverinfo: "x+y"
+        hoverinfo: "x+y",
+        marker: {
+            color: sorted.map(item => item.pm25),
+            colorscale: [
+                [0.0, "#2ecc71"],  // tốt
+                [0.12, "#f1c40f"],  // trung bình
+                [0.35, "#e67e22"],  // kém
+                [0.55, "#e74c3c"]   // xấu
+            ],
+            cmin: 0,
+            cmax: 100
+        }
     }];
 
     const layout = {
@@ -64,7 +95,7 @@ function plotPM25Ranking(list, domId) {
         },
         autosize: true,
         margin: { l: 40, r: 20, t: 40, b: 80 },
-        bargap: 0.5,
+        bargap: 0.6,
         bargroupgap: 0
     };
 
@@ -79,7 +110,7 @@ function plotPM25Ranking(list, domId) {
 }
 
 // Xử lý thay đổi ngày
-document.getElementById('dateSelect').addEventListener('change', function(e) {
+document.getElementById('dateInput').addEventListener('change', function(e) {
     const selectedDate = e.target.value;
     const Datedate = new Date(selectedDate);
     const formattedDate = selectedDate.replace(/-/g, '');
@@ -87,6 +118,17 @@ document.getElementById('dateSelect').addEventListener('change', function(e) {
     formatted_stat_date = Datedate;
     updateStats();
 });
+
+function setDefaultDate(dateStr = null) {
+    const input = document.getElementById("dateInput");
+    const d = dateStr ? new Date(dateStr) : new Date();
+
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+
+    input.value = `${yyyy}-${mm}-${dd}`;
+}
 
 function getPM25Status(pm25) {
     if (pm25 <= 12) return 'Tốt';
@@ -213,6 +255,19 @@ function getFallbackResponse(message) {
     
     return 'Tôi có thể giúp bạn tìm hiểu về chỉ số PM2.5, tình hình không khí tại các tỉnh thành, và cách bảo vệ sức khỏe. Bạn muốn hỏi về vấn đề gì?';
 }
+
+const toggleChatbotBtn = document.getElementById('toggleChatbot');
+const container = document.querySelector('.container');
+
+toggleChatbotBtn.addEventListener('click', () => {
+    container.classList.toggle('chatbot-hidden');
+    toggleChatbotBtn.classList.toggle('shifted');
+    
+    window.dispatchEvent(new Event('resize'));
+    Plotly.Plots.resize(document.getElementById("lineChart"));
+    Plotly.Plots.resize(document.getElementById("barChart1"));
+    Plotly.Plots.resize(document.getElementById("barChart2"));
+});
 
 // Khởi tạo
 updateStats();
