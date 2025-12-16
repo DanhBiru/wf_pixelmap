@@ -1,5 +1,5 @@
 import { updateSidebarInfo, updateSidebarPM25andAdvice } from "./sidebar.js";
-import { getDaysAround, getPM25 } from "../utils/helpers.js";
+import { getDaysAround, getPM25, getPM25Values } from "../utils/helpers.js";
 import { DEFAULT_DATE, currentDate } from "../map_layers/terracotta.js";
 
 import { pm25Bands } from "../utils/scale.js";
@@ -99,7 +99,7 @@ function plottingChart(formattedDates, pm25Values) {
         margin: { t: 20, r: 20, l: 45, b: 70},
         shapes: shapes,
         dragmode: false,
-        xaxis: { title: {text: date_text, font: { family: "Roboto", size: 15 }}, tickangle: -45, showgrid: false, dtick: 2 },
+        xaxis: { type: "category", tickangle: -45, showgrid: false, dtick: 2 },
         yaxis: { title: {text: "PM2.5", font: { family: "Poppins", size: 15 }}, range: [ymin, ymax], showgrid: true, dtick: 5, gridcolor: "rgba(0,0,0,0.8)" }
     };
     
@@ -107,13 +107,4 @@ function plottingChart(formattedDates, pm25Values) {
         displayModeBar: false,
     }
     Plotly.newPlot(chart, [trace], layout, config);
-}
-
-async function getPM25Values(lat, lon, dates) {
-    const pm25Values = [];
-    for (const date of dates) {
-        const v = await getPM25(lat, lon, date); 
-        pm25Values.push(v);
-    }
-    return pm25Values;
 }

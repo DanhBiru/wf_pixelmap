@@ -1,7 +1,8 @@
 import { DEFAULT_DATE, DEFAULT_DATE_d } from "../map_layers/terracotta.js";
-import { getPM25whole, getStats, observePlotResize } from "../utils/helpers.js";
+import { dateRangeYMD, getPM25Values, getPM25whole, getStats, observePlotResize } from "../utils/helpers.js";
 import { getLang, initLang } from "../lang/lang.js";
 import "../ui/navbtn.js";
+import { pm25Bands, province_latlon } from "../utils/scale.js";
 
 observePlotResize("lineChart");
 observePlotResize("barChart1");
@@ -14,12 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
 let stat_date = DEFAULT_DATE;
 let formatted_stat_date = DEFAULT_DATE_d;
 
-setDefaultDate(formatted_stat_date);
+let date_start = new Date("2021-10-10");
+let date_end = formatted_stat_date;
+let selected_province = "Hà Nội";
 
-// Dữ liệu mẫu về các tỉnh thành
 const cities = await getPM25whole(stat_date);
-
-// Cập nhật số liệu thống kê
 const els = {
   lowestCity: document.getElementById('lowestCity'),
   lowestValue: document.getElementById('lowestValue'),
@@ -49,7 +49,7 @@ async function updateStats() {
 
     plotPM25Ranking(pm25Values, "barChart1");
     // plotPM25Ranking(pm25Values, "barChart2");
-    plotPM25Ranking(pm25Values, "lineChart");
+    plotPM25ByTime(date_start, date_end, selected_province, "lineChart");
 
     els.lowestCity.textContent = lowest.name;
     els.lowestValue.textContent = lowest.pm25.toFixed(1);
@@ -109,25 +109,69 @@ function plotPM25Ranking(list, domId) {
     Plotly.newPlot(domId, data, layout, config);
 }
 
-// Xử lý thay đổi ngày
-document.getElementById('dateInput').addEventListener('change', function(e) {
-    const selectedDate = e.target.value;
-    const Datedate = new Date(selectedDate);
-    const formattedDate = selectedDate.replace(/-/g, '');
-    stat_date = formattedDate;
-    formatted_stat_date = Datedate;
-    updateStats();
-});
+async function plotPM25ByTime(dateStart, dateEnd, province, domId) {
+    const { rawDates, formattedDates } = dateRangeYMD(dateStart, dateEnd);
+    const { lat, lon } = province_latlon[province];
+    const pm25Values = await getPM25Values(lat, lon, rawDates)
+    console.log(rawDates);
+    console.log(formattedDates);
 
-function setDefaultDate(dateStr = null) {
-    const input = document.getElementById("dateInput");
-    const d = dateStr ? new Date(dateStr) : new Date();
+    const ymin = Math.min(...pm25Values) - 5;
+    const ymax = Math.max(...pm25Values) + 5;
 
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
+    const date_text = getLang() === "vi" ? "Ngày" : "Date"; 
+    const visibleBands = pm25Bands.filter(b => b.max >= ymin && b.min <= ymax);
 
-    input.value = `${yyyy}-${mm}-${dd}`;
+    const shapes = visibleBands.map(b => ({
+        type: "rect",
+        xref: "paper",
+        yref: "y",
+        x0: 0,
+        x1: 1,
+        y0: Math.max(b.min, ymin),
+        y1: Math.min(b.max, ymax),
+        fillcolor: b.color,
+        opacity: 0.7,   
+        line: {width: 0},
+        layer: "below"
+    }));
+
+    const trace = {
+        x: formattedDates,
+        y: pm25Values,
+        type: 'scatter', // "bar" "scatter"
+        mode: 'lines+markers',
+        marker: {
+            symbol: 'square',
+            size: 10
+        },
+        // hoverinfo: 'skip',
+        line: {color: "#0057FC"},
+        hovertemplate: 
+            `${date_text}: %{x}<br>` +
+            '<b>PM25:<b> %{y:.2f}<br>' + 
+            '<extra></extra>',
+        hoverlabel: {
+            bgcolor: "rgba(255,255,255,0.8",
+            bordercolor: "#003fb4",
+            padding: "5px"
+        },
+        opacity: 1,
+    };
+
+    const layout = {
+        margin: { t: 20, r: 20, l: 45, b: 70},
+        shapes: shapes,
+        dragmode: false,
+        xaxis: { type: "category", tickangle: -45, showgrid: false },
+        yaxis: { title: {text: "PM2.5", font: { family: "Poppins", size: 15 }}, range: [ymin, ymax], showgrid: false, dtick: 5}
+    };
+    
+    const config = {
+        displayModeBar: false,
+    }
+
+    Plotly.newPlot(domId, [trace], layout, config);
 }
 
 function getPM25Status(pm25) {
@@ -275,3 +319,30 @@ window.addEventListener('DOMContentLoaded', updateStats);
 
 window.sendMessage = sendMessage;
 window.askQuestion = askQuestion;
+
+const picker = new Litepicker({
+    element: document.getElementById('dateRange'),
+    singleMode: false,              // Chế độ range
+    numberOfMonths: 1,              // Hiển thị 1 tháng
+    numberOfColumns: 1,             // 1 cột
+    format: 'DD/MM/YYYY',           // Format hiển thị
+    delimiter: ' - ',               // Dấu phân cách
+    minDate: '2021-10-01',          // Ngày tối thiểu
+    maxDate: '2021-10-31',          // Ngày tối đa
+    startDate: '2021-10-01',        // Ngày bắt đầu mặc định
+    endDate: '2021-10-07',          // Ngày kết thúc mặc định
+    autoApply: true,                // Tự động áp dụng
+    showWeekNumbers: false,         // Không hiển thị số tuần
+
+    setup: (picker) => {
+        picker.on('selected', (date1, date2) => {
+            if (date1 && date2) {
+                // const diffTime = Math.abs(date2.getTime() - date1.getTime());
+                // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                date_start = date1.dateInstance;
+                date_end = date2.dateInstance;
+                plotPM25ByTime(date_start, date_end, selected_province, domId);
+            }
+        });
+    }
+});

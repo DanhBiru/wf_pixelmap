@@ -78,7 +78,7 @@
                 "lowest": "Tỉnh thành có giá trị chỉ số PM2.5 thấp nhất",
                 "highest": "Tỉnh thành có giá trị chỉ số PM2.5 cao nhất",
                 "average": "Giá trị trung bình của chỉ số PM2.5 trên 32 tỉnh thành",
-                "badQuality": "Số tỉnh thành có chỉ số PM2.5 lớn hơn 55.5 μg/m"
+                "badQuality": "Số tỉnh thành có chỉ số PM2.5 lớn hơn 35.5 μg/m"
             }
         }
     },

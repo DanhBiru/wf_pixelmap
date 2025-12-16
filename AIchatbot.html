@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/litepicker/2.0.12/css/litepicker.css">
     <title>Phân tích dữ liệu - Trợ lý ảo AI</title>
     <link rel="stylesheet" href="AIchatbot.css"/>
 </head>
@@ -40,21 +41,77 @@
                     <h1 data-i18n="AIpage.pageTitle">Chỉ số chất lượng không khí cả nước</h1>
                 </div>
                 <div class="date-selector">
-                    <!-- <label for="dateSelect" data-i18n="AIpage.selectDate">Chọn ngày:</label>
-                    <select id="dateSelect" class="date-dropdown">
-                        <option value="2021-10-20"><span data-i18n="AIpage.today">Hôm nay - 20/10/2021</span></option>
-                        <option value="2021-10-19"><span data-i18n="yesterday">Hôm qua - 19/10/2021</span></option>
-                        <option value="2021-10-18">18/10/2021</option>
-                        <option value="2021-10-17">17/10/2021</option>
-                        <option value="2021-10-16">16/10/2021</option>
-                    </select> -->
-                    <input
-                        type="date"
-                        id="dateInput"
-                        min="2021-10-01"
-                        max="2021-10-31"
-                        class="date-input"
-                    />
+                    <!-- Dropdown chọn tỉnh thành -->
+                    <label for="provinceSelect">Tỉnh thành:</label>
+                    <select id="provinceSelect" class="province-dropdown">
+                        <option value="all">Toàn quốc</option>
+                        <option value="hanoi">Hà Nội</option>
+                        <option value="hochiminh">TP. Hồ Chí Minh</option>
+                        <option value="danang">Đà Nẵng</option>
+                        <option value="haiphong">Hải Phòng</option>
+                        <option value="cantho">Cần Thơ</option>
+                        <option value="angiang">An Giang</option>
+                        <option value="baria">Bà Rịa - Vũng Tàu</option>
+                        <option value="bacgiang">Bắc Giang</option>
+                        <option value="backan">Bắc Kạn</option>
+                        <option value="baclieu">Bạc Liêu</option>
+                        <option value="bacninh">Bắc Ninh</option>
+                        <option value="bentre">Bến Tre</option>
+                        <option value="binhdinh">Bình Định</option>
+                        <option value="binhduong">Bình Dương</option>
+                        <option value="binhphuoc">Bình Phước</option>
+                        <option value="binhthuan">Bình Thuận</option>
+                        <option value="camau">Cà Mau</option>
+                        <option value="caobang">Cao Bằng</option>
+                        <option value="daklak">Đắk Lắk</option>
+                        <option value="daknong">Đắk Nông</option>
+                        <option value="dienbien">Điện Biên</option>
+                        <option value="dongnai">Đồng Nai</option>
+                        <option value="dongthap">Đồng Tháp</option>
+                        <option value="gialai">Gia Lai</option>
+                        <option value="hagiang">Hà Giang</option>
+                        <option value="hanam">Hà Nam</option>
+                        <option value="hatinh">Hà Tĩnh</option>
+                        <option value="haugiang">Hậu Giang</option>
+                        <option value="hoabinh">Hòa Bình</option>
+                        <option value="hungyen">Hưng Yên</option>
+                        <option value="khanhhoa">Khánh Hòa</option>
+                        <option value="kiengiang">Kiên Giang</option>
+                        <option value="kontum">Kon Tum</option>
+                        <option value="laichau">Lai Châu</option>
+                        <option value="lamdong">Lâm Đồng</option>
+                        <option value="langson">Lạng Sơn</option>
+                        <option value="laocai">Lào Cai</option>
+                        <option value="longan">Long An</option>
+                        <option value="namdinh">Nam Định</option>
+                        <option value="nghean">Nghệ An</option>
+                        <option value="ninhbinh">Ninh Bình</option>
+                        <option value="ninhthuan">Ninh Thuận</option>
+                        <option value="phutho">Phú Thọ</option>
+                        <option value="phuyen">Phú Yên</option>
+                        <option value="quangbinh">Quảng Bình</option>
+                        <option value="quangnam">Quảng Nam</option>
+                        <option value="quangngai">Quảng Ngãi</option>
+                        <option value="quangninh">Quảng Ninh</option>
+                        <option value="quangtri">Quảng Trị</option>
+                        <option value="soctrang">Sóc Trăng</option>
+                        <option value="sonla">Sơn La</option>
+                        <option value="tayninh">Tây Ninh</option>
+                        <option value="thaibinh">Thái Bình</option>
+                        <option value="thainguyen">Thái Nguyên</option>
+                        <option value="thanhhoa">Thanh Hóa</option>
+                        <option value="thua thienhue">Thừa Thiên Huế</option>
+                        <option value="tiengiang">Tiền Giang</option>
+                        <option value="travinh">Trà Vinh</option>
+                        <option value="tuyenquang">Tuyên Quang</option>
+                        <option value="vinhlong">Vĩnh Long</option>
+                        <option value="vinhphuc">Vĩnh Phúc</option>
+                        <option value="yenbai">Yên Bái</option>
+                    </select>
+
+                    <!-- Date range selector -->
+                    <label for="dateRange">Chọn khoảng thời gian:</label>
+                    <input type="text" id="dateRange" placeholder="Chọn ngày bắt đầu và kết thúc" class="date-input" readonly>
                 </div>
             </div>
 
@@ -173,6 +230,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/litepicker/2.0.12/litepicker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.min.js"></script>
     <script type="module" src="AIpage/AIpage.js"></script>  
 </body>

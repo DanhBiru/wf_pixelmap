@@ -132,6 +132,7 @@ h1 {
     display: flex;
     align-items: center;
     gap: 5px;
+    flex-wrap: wrap;
 }
 
 .date-selector label {
@@ -140,8 +141,8 @@ h1 {
     font-size: 14px;
 }
 
-.date-dropdown, .date-input{
-    padding: 10px 16px;
+.province-dropdown, .date-input{
+    padding: 5px 5px;
     border: 2px solid #e0e0e0;
     border-radius: 10px;
     font-size: 14px;
@@ -150,14 +151,22 @@ h1 {
     cursor: pointer;
     transition: all 0.3s;
     outline: none;
+    /* min-width: 120px; */
+}
+
+.province-dropdown {
+    min-width: 140px;
+}
+
+.date-input {
     min-width: 120px;
 }
 
-.date-dropdown:hover, .date-input:hover {
+.province-dropdown:hover, .date-input:hover {
     border-color: #3A94C5;
 }
 
-.date-dropdown:focus, .date-input:focus {
+.province-dropdown:focus, .date-input:focus {
     border-color: #3A94C5;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }

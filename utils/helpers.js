@@ -27,6 +27,15 @@ export async function getPM25(lat, lon, date) {
     return pm25Value > 0 ? pm25Value : null;
 }
 
+export async function getPM25Values(lat, lon, dates) {
+    const pm25Values = [];
+    for (const date of dates) {
+        const v = await getPM25(lat, lon, date); 
+        pm25Values.push(v);
+    }
+    return pm25Values;
+}
+
 // get a string with 5 days before and after the given date in YYYYMMDD format
 export function getDaysAround(dateStr, n) {
     if (n < 1) return;
@@ -47,11 +56,31 @@ export function getDaysAround(dateStr, n) {
         const m = String(d.getMonth() + 1).padStart(2, '0');
         const dd = String(d.getDate()).padStart(2, '0');
 
-        formattedDates.push(`${dd}/${m}`)
+        formattedDates.push(`${y}-${dd}-${m}`)
         rawDates.push(`${y}${m}${dd}`);
     }
 
     return {rawDates, formattedDates };
+}
+
+// for litePicker's dateRange input
+export function dateRangeYMD(date1, date2) {
+    const rawDates = [];
+    const formattedDates = [];
+    const d = new Date(date1);
+
+    while (d <= date2) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+
+        formattedDates.push(`${y}-${m}-${day}`);
+        rawDates.push(`${y}${m}${day}`);
+
+        d.setDate(d.getDate() + 1);
+    }
+
+    return { rawDates, formattedDates };
 }
 
 export async function getPM25whole(date) {
