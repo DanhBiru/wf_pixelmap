@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/litepicker/2.0.12/css/litepicker.css">
     <title>Phân tích dữ liệu - Trợ lý ảo AI</title>
@@ -44,69 +46,38 @@
                     <!-- Dropdown chọn tỉnh thành -->
                     <label for="provinceSelect">Tỉnh thành:</label>
                     <select id="provinceSelect" class="province-dropdown">
-                        <option value="all">Toàn quốc</option>
-                        <option value="hanoi">Hà Nội</option>
-                        <option value="hochiminh">TP. Hồ Chí Minh</option>
-                        <option value="danang">Đà Nẵng</option>
-                        <option value="haiphong">Hải Phòng</option>
-                        <option value="cantho">Cần Thơ</option>
-                        <option value="angiang">An Giang</option>
-                        <option value="baria">Bà Rịa - Vũng Tàu</option>
-                        <option value="bacgiang">Bắc Giang</option>
-                        <option value="backan">Bắc Kạn</option>
-                        <option value="baclieu">Bạc Liêu</option>
-                        <option value="bacninh">Bắc Ninh</option>
-                        <option value="bentre">Bến Tre</option>
-                        <option value="binhdinh">Bình Định</option>
-                        <option value="binhduong">Bình Dương</option>
-                        <option value="binhphuoc">Bình Phước</option>
-                        <option value="binhthuan">Bình Thuận</option>
-                        <option value="camau">Cà Mau</option>
-                        <option value="caobang">Cao Bằng</option>
-                        <option value="daklak">Đắk Lắk</option>
-                        <option value="daknong">Đắk Nông</option>
-                        <option value="dienbien">Điện Biên</option>
-                        <option value="dongnai">Đồng Nai</option>
-                        <option value="dongthap">Đồng Tháp</option>
-                        <option value="gialai">Gia Lai</option>
-                        <option value="hagiang">Hà Giang</option>
-                        <option value="hanam">Hà Nam</option>
-                        <option value="hatinh">Hà Tĩnh</option>
-                        <option value="haugiang">Hậu Giang</option>
-                        <option value="hoabinh">Hòa Bình</option>
-                        <option value="hungyen">Hưng Yên</option>
-                        <option value="khanhhoa">Khánh Hòa</option>
-                        <option value="kiengiang">Kiên Giang</option>
-                        <option value="kontum">Kon Tum</option>
-                        <option value="laichau">Lai Châu</option>
-                        <option value="lamdong">Lâm Đồng</option>
-                        <option value="langson">Lạng Sơn</option>
-                        <option value="laocai">Lào Cai</option>
-                        <option value="longan">Long An</option>
-                        <option value="namdinh">Nam Định</option>
-                        <option value="nghean">Nghệ An</option>
-                        <option value="ninhbinh">Ninh Bình</option>
-                        <option value="ninhthuan">Ninh Thuận</option>
-                        <option value="phutho">Phú Thọ</option>
-                        <option value="phuyen">Phú Yên</option>
-                        <option value="quangbinh">Quảng Bình</option>
-                        <option value="quangnam">Quảng Nam</option>
-                        <option value="quangngai">Quảng Ngãi</option>
-                        <option value="quangninh">Quảng Ninh</option>
-                        <option value="quangtri">Quảng Trị</option>
-                        <option value="soctrang">Sóc Trăng</option>
-                        <option value="sonla">Sơn La</option>
-                        <option value="tayninh">Tây Ninh</option>
-                        <option value="thaibinh">Thái Bình</option>
-                        <option value="thainguyen">Thái Nguyên</option>
-                        <option value="thanhhoa">Thanh Hóa</option>
-                        <option value="thua thienhue">Thừa Thiên Huế</option>
-                        <option value="tiengiang">Tiền Giang</option>
-                        <option value="travinh">Trà Vinh</option>
-                        <option value="tuyenquang">Tuyên Quang</option>
-                        <option value="vinhlong">Vĩnh Long</option>
-                        <option value="vinhphuc">Vĩnh Phúc</option>
-                        <option value="yenbai">Yên Bái</option>
+                        <option value="Hà Nội" selected="">Hà Nội</option>
+                        <option value="Hải Phòng">Hải Phòng</option>
+                        <option value="Quảng Ninh">Quảng Ninh</option>
+                        <option value="Lào Cai">Lào Cai</option>
+                        <option value="Hà Giang">Hà Giang</option>
+                        <option value="Cao Bằng">Cao Bằng</option>
+                        <option value="Lạng Sơn">Lạng Sơn</option>
+                        <option value="Bắc Kạn">Bắc Kạn</option>
+                        <option value="Thái Nguyên">Thái Nguyên</option>
+                        <option value="Phú Thọ">Phú Thọ</option>
+                        <option value="Vĩnh Phúc">Vĩnh Phúc</option>
+                        <option value="Bắc Giang">Bắc Giang</option>
+                        <option value="Bắc Ninh">Bắc Ninh</option>
+                        <option value="Hải Dương">Hải Dương</option>
+                        <option value="Hưng Yên">Hưng Yên</option>
+                        <option value="Thái Bình">Thái Bình</option>
+                        <option value="Nam Định">Nam Định</option>
+                        <option value="Ninh Bình">Ninh Bình</option>
+                        <option value="Thanh Hóa">Thanh Hóa</option>
+                        <option value="Nghệ An">Nghệ An</option>
+                        <option value="Hà Tĩnh">Hà Tĩnh</option>
+                        <option value="Quảng Bình">Quảng Bình</option>
+                        <option value="Quảng Trị">Quảng Trị</option>
+                        <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+                        <option value="Đà Nẵng">Đà Nẵng</option>
+                        <option value="Quảng Nam">Quảng Nam</option>
+                        <option value="Quảng Ngãi">Quảng Ngãi</option>
+                        <option value="Kon Tum">Kon Tum</option>
+                        <option value="Gia Lai">Gia Lai</option>
+                        <option value="Đắk Lắk">Đắk Lắk</option>
+                        <option value="Khánh Hòa">Khánh Hòa</option>
+                        <option value="TP Hồ Chí Minh">TP Hồ Chí Minh</option>
                     </select>
 
                     <!-- Date range selector -->
@@ -183,7 +154,7 @@
                 </div>
 
                 <div class="chart-container bar-chart-2">
-                    <div class="chart" id="barChart2"></div>
+                    <div class="chart" id="map"></div>
                 </div>
             </div>
         </div>
@@ -230,6 +201,8 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/litepicker/2.0.12/litepicker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.min.js"></script>
     <script type="module" src="AIpage/AIpage.js"></script>  

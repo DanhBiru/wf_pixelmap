@@ -1,8 +1,8 @@
-import { DEFAULT_DATE, DEFAULT_DATE_d } from "../map_layers/terracotta.js";
-import { dateRangeYMD, getPM25Values, getPM25whole, getStats, observePlotResize } from "../utils/helpers.js";
+import { DEFAULT_DATE, DEFAULT_DATE_d, DEFAULT_DATE_f } from "../map_layers/terracotta.js";
+import { dateRangeYMD, dateToYMDArray, getPM25Values, getPM25whole, getStats, observePlotResize } from "../utils/helpers.js";
 import { getLang, initLang } from "../lang/lang.js";
 import "../ui/navbtn.js";
-import { pm25Bands, province_latlon } from "../utils/scale.js";
+import { pm25colors, pm25Bands, province_latlon } from "../utils/scale.js";
 
 observePlotResize("lineChart");
 observePlotResize("barChart1");
@@ -18,6 +18,7 @@ let formatted_stat_date = DEFAULT_DATE_d;
 let date_start = new Date("2021-10-10");
 let date_end = formatted_stat_date;
 let selected_province = "Hà Nội";
+let pm25Values = await getPM25whole(stat_date);
 
 const cities = await getPM25whole(stat_date);
 const els = {
@@ -39,7 +40,7 @@ async function updateStats() {
     console.log('update', stat_date);
     setLoading(true);
 
-    const pm25Values = await getPM25whole(stat_date);
+    pm25Values = await getPM25whole(stat_date);
     const stats = getStats(pm25Values);
 
     const lowest = stats[0];
@@ -48,7 +49,6 @@ async function updateStats() {
     const badQualityCount = stats[3];
 
     plotPM25Ranking(pm25Values, "barChart1");
-    // plotPM25Ranking(pm25Values, "barChart2");
     plotPM25ByTime(date_start, date_end, selected_province, "lineChart");
 
     els.lowestCity.textContent = lowest.name;
@@ -64,7 +64,6 @@ async function updateStats() {
 
 function plotPM25Ranking(list, domId) {
     const sorted = [...list].sort((a, b) => b.pm25 - a.pm25).slice(0, 15);;
-    const text = getLang() == "vi" ? "Xếp hạng PM2.5 theo 15 tỉnh thành ngày" : "PM2.5 ranking by 15 provinces"
 
     const data = [{
         x: sorted.map(item => item.name),
@@ -81,11 +80,18 @@ function plotPM25Ranking(list, domId) {
             ],
             cmin: 0,
             cmax: 100
-        }
+        },
+        hovertemplate: 
+            '<b>PM25:<b> %{y:.2f}<br>' + 
+            '<extra></extra>',
+        hoverlabel: {
+            bgcolor: "rgba(255,255,255,0.8",
+            bordercolor: "#003fb4",
+            padding: "10px"
+        },
     }];
 
     const layout = {
-        title: {"text": `${text} ${formatted_stat_date.toLocaleDateString("vi-VN")}`},
         xaxis: {
             tickangle: -45
         },
@@ -113,11 +119,10 @@ async function plotPM25ByTime(dateStart, dateEnd, province, domId) {
     const { rawDates, formattedDates } = dateRangeYMD(dateStart, dateEnd);
     const { lat, lon } = province_latlon[province];
     const pm25Values = await getPM25Values(lat, lon, rawDates)
-    console.log(rawDates);
-    console.log(formattedDates);
 
     const ymin = Math.min(...pm25Values) - 5;
     const ymax = Math.max(...pm25Values) + 5;
+    const todayIndex = formattedDates.indexOf(DEFAULT_DATE_f);
 
     const date_text = getLang() === "vi" ? "Ngày" : "Date"; 
     const visibleBands = pm25Bands.filter(b => b.max >= ymin && b.min <= ymax);
@@ -136,6 +141,7 @@ async function plotPM25ByTime(dateStart, dateEnd, province, domId) {
         layer: "below"
     }));
 
+    let traces = [];
     const trace = {
         x: formattedDates,
         y: pm25Values,
@@ -154,24 +160,43 @@ async function plotPM25ByTime(dateStart, dateEnd, province, domId) {
         hoverlabel: {
             bgcolor: "rgba(255,255,255,0.8",
             bordercolor: "#003fb4",
-            padding: "5px"
+            padding: "10px"
         },
         opacity: 1,
+        showlegend: false
     };
+    traces.push(trace);
+
+    if (todayIndex !== -1) {
+        const traceToday = {
+            x: [formattedDates[todayIndex]],
+            y: [pm25Values[todayIndex]],
+            type: "scatter",
+            mode: "markers",
+            marker: {
+                symbol: 'square',
+                color: "red",
+                size: 12
+            },
+            hoverinfo: "skip",
+            showlegend: false
+        };
+        traces.push(traceToday);
+    }
 
     const layout = {
         margin: { t: 20, r: 20, l: 45, b: 70},
         shapes: shapes,
         dragmode: false,
-        xaxis: { type: "category", tickangle: -45, showgrid: false },
-        yaxis: { title: {text: "PM2.5", font: { family: "Poppins", size: 15 }}, range: [ymin, ymax], showgrid: false, dtick: 5}
+        xaxis: { type: "category", tickangle: -45, showgrid: false, showspikes: false },
+        yaxis: { title: {text: "PM2.5", font: { family: "Poppins", size: 15 }}, range: [ymin, ymax], showgrid: false, dtick: 5},
     };
     
     const config = {
         displayModeBar: false,
     }
 
-    Plotly.newPlot(domId, [trace], layout, config);
+    Plotly.newPlot(domId, traces, layout, config);
 }
 
 function getPM25Status(pm25) {
@@ -328,9 +353,9 @@ const picker = new Litepicker({
     format: 'DD/MM/YYYY',           // Format hiển thị
     delimiter: ' - ',               // Dấu phân cách
     minDate: '2021-10-01',          // Ngày tối thiểu
-    maxDate: '2021-10-31',          // Ngày tối đa
-    startDate: '2021-10-01',        // Ngày bắt đầu mặc định
-    endDate: '2021-10-07',          // Ngày kết thúc mặc định
+    maxDate: '2021-11-31',          // Ngày tối đa
+    startDate: '2021-10-10',        // Ngày bắt đầu mặc định
+    endDate: '2021-10-27',          // Ngày kết thúc mặc định
     autoApply: true,                // Tự động áp dụng
     showWeekNumbers: false,         // Không hiển thị số tuần
 
@@ -341,8 +366,104 @@ const picker = new Litepicker({
                 // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
                 date_start = date1.dateInstance;
                 date_end = date2.dateInstance;
-                plotPM25ByTime(date_start, date_end, selected_province, domId);
+                stat_date = dateToYMDArray(date_end);
+                formatted_stat_date = date_end;
+                updateStats();
+                // plotPM25ByTime(date_start, date_end, selected_province, "lineChart");
             }
         });
     }
 });
+
+provinceSelect.addEventListener('change', function() {
+    selected_province = this.value;
+    plotPM25ByTime(date_start, date_end, selected_province, "lineChart");
+});
+
+var map = L.map('map', {
+    center: [15.95, 105.80],
+    zoom: 5.5,
+    zoomControl: false,
+    minZoom: 5.1,   
+    maxZoom: 8, 
+    maxBounds: [
+        [7.18, 96.14],   
+        [24.39, 110.46]   
+    ],
+    maxBoundsViscosity: 1.0,
+});
+
+const pm25Map = Object.fromEntries(
+    pm25Values.map(({ name, pm25 }) => [name, pm25])
+);
+
+function getColor(pm25) {
+    return pm25 > 250 ? pm25colors[5] :
+           pm25 > 150 ? pm25colors[4] :
+           pm25 >  55 ? pm25colors[3] :
+           pm25 >  35 ? pm25colors[2] :
+           pm25 >  12 ? pm25colors[1] :
+                        pm25colors[0];
+}
+
+var geojsonFeature = null;
+const filePath = "data2/VNnew34.json"
+
+fetch(filePath)
+    .then(response => response.json())
+    .then(data => {
+        geojsonFeature = data;
+
+        function style(feature) {
+            const name = feature.properties.NAME_1;
+            const pm25 = pm25Map[name];
+
+            return {
+                fillColor: getColor(pm25),
+                weight: 1,
+                opacity: 1,
+                color: '#555',
+                fillOpacity: 0.7
+            };
+        }
+
+        function highlightFeature(e) {
+            var layer = e.target;
+            layer.setStyle({
+                weight: 2,
+                color: '#000',
+                fillOpacity: 0.9
+            });
+            layer.bringToFront();
+        }
+
+        function resetHighlight(e) {
+            geojsonLayer.resetStyle(e.target);
+        }
+
+        function onEachFeature(feature, layer) {
+            const name = feature.properties.NAME_1;
+            const pm25 = pm25Map[name];
+
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight
+            });
+
+            layer.bindTooltip(
+                `<b>${name}</b><br>PM2.5: ${pm25 ?? 'N/A'}`,
+                {
+                    sticky: true,
+                    direction: "top",
+                    opacity: 0.9,
+                    className: "pm25-tooltip"
+                }
+            );
+        }
+
+        var geojsonLayer = L.geoJSON(geojsonFeature, {
+            style: style,
+            onEachFeature: onEachFeature
+        }).addTo(map);
+    })
+    .catch(error => console.error('Lỗi:', error));
