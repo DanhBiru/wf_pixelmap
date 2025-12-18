@@ -23,10 +23,10 @@ const DATATYPE = {
 };
 
 const DEFAULT_DATATYPE = "PM25";
-export const DEFAULT_DATE = "20211020";
-export const DEFAULT_DATE_d = new Date('2021-10-20');
+export const DEFAULT_DATE = "20211027";
+export const DEFAULT_DATE_f = '2021-10-27';
+export const DEFAULT_DATE_d = new Date(DEFAULT_DATE_f);
 
-// TODO: make use of these
 export var currentDatatype = DEFAULT_DATATYPE;
 export var currentDate = DEFAULT_DATE;
 
