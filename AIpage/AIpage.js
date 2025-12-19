@@ -48,9 +48,6 @@ async function updateStats() {
     const average = stats[2].toFixed(1);
     const badQualityCount = stats[3];
 
-    plotPM25Ranking(pm25Values, "barChart1");
-    plotPM25ByTime(date_start, date_end, selected_province, "lineChart");
-
     els.lowestCity.textContent = lowest.name;
     els.lowestValue.textContent = lowest.pm25.toFixed(1);
     els.highestCity.textContent = highest.name;
@@ -60,6 +57,11 @@ async function updateStats() {
 
     setLoading(false);
     console.log("done update");
+
+    plotPM25Ranking(pm25Values, "barChart1");
+    plotPM25ByTime(date_start, date_end, selected_province, "lineChart");
+    console.log("done chart");
+    
 }
 
 function plotPM25Ranking(list, domId) {
@@ -259,16 +261,26 @@ function hideTypingIndicator() {
 // test
 async function callAIAPI(userMessage) {
     try {
+        const sortedByPM25 = [...cities].sort((a, b) => b.pm25 - a.pm25);
+        const avgPM25 = (cities.reduce((sum, c) => sum + c.pm25, 0) / cities.length).toFixed(1);
+        const badQuality = cities.filter(c => c.pm25 > 55.4).length;
+        const goodQuality = cities.filter(c => c.pm25 <= 12).length;
+        
         const context = `
 Dữ liệu chất lượng không khí hiện tại (PM2.5):
 ${cities.map(c => `- ${c.name}: ${c.pm25} μg/m³ (${getPM25Status(c.pm25)})`).join('\n')}
 
-Thông tin về PM2.5:
-- 0-12: Tốt (màu xanh lá)
-- 12.1-35.4: Trung bình (màu vàng)
-- 35.5-55.4: Kém (màu cam)
-- 55.5-150.4: Xấu (màu đỏ)
-- 150.5+: Rất xấu (màu tím)
+PHÂN TÍCH TỰ ĐỘNG:
+- Trung bình toàn quốc: ${avgPM25} μg/m³
+- Số tỉnh chất lượng tốt (≤12): ${goodQuality}
+- Số tỉnh chất lượng xấu (>55.4): ${badQuality}
+- Top 3 ô nhiễm nhất: ${sortedByPM25.slice(0, 3).map(c => `${c.name} (${c.pm25})`).join(', ')}
+- Top 3 sạch nhất: ${sortedByPM25.slice(-3).reverse().map(c => `${c.name} (${c.pm25})`).join(', ')}
+
+TIÊU CHUẨN THAM KHẢO:
+- WHO khuyến nghị: PM2.5 < 5 μg/m³ (24h)
+- EPA Mỹ: Tốt < 12, Trung bình 12-35.4, Kém 35.5-55.4, Xấu 55.5-150.4
+- Việt Nam QCVN 05:2013: < 50 μg/m³ (24h)
         `.trim();
 
         const response = await fetch("http://localhost:3000/groq", {
