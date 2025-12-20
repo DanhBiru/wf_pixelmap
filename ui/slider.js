@@ -7,7 +7,8 @@ window.onload = function() {
 
 // Tạo dữ liệu ngày
 const dates = [];
-var startDate = new Date('2021-10-6');
+const startDate = new Date(DEFAULT_DATE_d);
+startDate.setDate(startDate.getDate() - 14);
 
 for (let i = 0; i < 22; i++) {
     const date = new Date(startDate);
