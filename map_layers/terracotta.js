@@ -1,23 +1,23 @@
 export let TCLayer;
 
-var tcUrl = 'http://localhost:5000/singleband/{type}/{date}/{z}/{x}/{y}.png?colormap={colormap}&stretch_range={range}';
+// var tcUrl = 'http://localhost:5000/singleband/{type}/{date}/{z}/{x}/{y}.png?colormap={colormap}&stretch_range={range}';
 // newUrl = 'http://localhost:5000/singleband/DEM/00000000/{z}/{x}/{y}.png?colormap=gist_earth&stretch_range=[0,2578]'
-// var tcUrl = 'https://wf-pixelmap.onrender.com/singleband/PM25/{date}/{z}/{x}/{y}.png?colormap=pm25&stretch_range=%5B0,150%5D';
+var tcUrl = 'https://wf-pixelmap.onrender.com/singleband/{type}/{date}/{z}/{x}/{y}.png?colormap={colormap}&stretch_range={range}';
 
 // Valid options for {type} with descriptive names and attributes to make it easier to add new features/datatypes 
 const DATATYPE = {
     PM25: {
         type: "PM25",
         colormap: "pm25",
-        range: "[0,250]",
-        // range: "%5D0,150%5B", // this is for live server
+        // range: "[0,250]",
+        range: "%5B0,150%5D", // this is for live server
         time_variant: true
     },
     Terrain: {
         type: "DEM",
         colormap: "gist_earth",
-        range: "[0,2578]",
-        // range: "%5D0,150%5B",
+        // range: "[0,2578]",
+        range: "%5B0,150%5D",
         time_variant: false 
     }
 };

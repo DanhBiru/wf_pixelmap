@@ -13,3 +13,7 @@ export TC_EXTRA_CMAP_FOLDER=$HOME/wf_pixelmap/colormaps
 terracotta serve -d vietnam.sqlite
 
 terracotta connect localhost:5000
+
+# Preparing grok server
+
+npm AIpage/server.js

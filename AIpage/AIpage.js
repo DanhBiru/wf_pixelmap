@@ -283,7 +283,7 @@ TIÊU CHUẨN THAM KHẢO:
 - Việt Nam QCVN 05:2013: < 50 μg/m³ (24h)
         `.trim();
 
-        const response = await fetch("http://localhost:3000/groq", {
+        const response = await fetch("https://randomjavafiles.onrender.com/groq", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userMessage, context })
@@ -347,7 +347,7 @@ toggleChatbotBtn.addEventListener('click', () => {
     window.dispatchEvent(new Event('resize'));
     Plotly.Plots.resize(document.getElementById("lineChart"));
     Plotly.Plots.resize(document.getElementById("barChart1"));
-    Plotly.Plots.resize(document.getElementById("barChart2"));
+    Plotly.Plots.resize(document.getElementById("2"));
 });
 
 // Khởi tạo
